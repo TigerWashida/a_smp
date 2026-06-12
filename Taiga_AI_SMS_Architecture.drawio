@@ -1,0 +1,90 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="Nmq4kLB03twpFmPndDtw">
+    <mxGraphModel dx="1118" dy="771" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-19" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="xGYM3z4zdTelZfzM0fZG-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="UI&lt;br&gt;Display - Time Table&lt;div&gt;Recommendation&lt;/div&gt;&lt;div&gt;Progress Tracking - Optional&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="190" x="300" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-3" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="xGYM3z4zdTelZfzM0fZG-1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="User&lt;br&gt;Input" vertex="1">
+          <mxGeometry height="30" width="60" x="570" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-26" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Rule Based" vertex="1">
+          <mxGeometry height="60" width="120" x="70" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-5" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="Database" vertex="1">
+          <mxGeometry height="80" width="60" x="570" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Json or Sqllite" vertex="1">
+          <mxGeometry height="30" width="60" x="570" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-21" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="xGYM3z4zdTelZfzM0fZG-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;FAST API Server&lt;/b&gt;&lt;br&gt;Handle Requests, Validate requests and process it&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="126" x="332" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-27" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-16" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(default, #4d4c4c);" value="Machine learning Based" vertex="1">
+          <mxGeometry height="60" width="120" x="70" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-17" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Study Planner builder" vertex="1">
+          <mxGeometry height="60" width="120" x="335" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-22" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="xGYM3z4zdTelZfzM0fZG-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-25" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-20" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="AI Study Management Engine" vertex="1">
+          <mxGeometry height="60" width="120" x="335" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-23" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="xGYM3z4zdTelZfzM0fZG-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-28" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-24" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(default, #4d4c4c);" value="Gen AI - LLM Based" vertex="1">
+          <mxGeometry height="60" width="120" x="60" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-30" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="xGYM3z4zdTelZfzM0fZG-20" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-29" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="1. Student preference&lt;div&gt;2. Priority calculation&lt;/div&gt;&lt;div&gt;3. Study hour split selection&lt;/div&gt;&lt;div&gt;4. Conflicts handling&lt;/div&gt;&lt;div&gt;5. Schedule generation - (subject, start, end in hrs)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="130" width="200" x="510" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-32" edge="1" parent="1" source="xGYM3z4zdTelZfzM0fZG-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="xGYM3z4zdTelZfzM0fZG-17" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-31" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Plan the schedules based on AI study plan&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="200" x="295" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="xGYM3z4zdTelZfzM0fZG-33" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Stores/Handled study information" vertex="1">
+          <mxGeometry height="60" width="100" x="660" y="440" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,2 +1,2 @@
-# a_smp
-Study management planner
+# ai_study_planner
+

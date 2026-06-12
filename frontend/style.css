@@ -1,0 +1,297 @@
+/* Color Palette & Custom CSS Variables */
+:root {
+    --bg-surface: #f8fafc;            /* Soft background tint */
+    --bg-card: #ffffff;               /* Pure white container backgrounds */
+    --text-primary: #0f172a;          /* Crisp near-black text for readability */
+    --text-secondary: #64748b;        /* Muted slate text for helper labels */
+    
+    /* Branding Accent Colors */
+    --primary-color: #6366f1;         /* Energetic Indigo core brand color */
+    --primary-hover: #4f46e5;         /* Richer purple hue for button interaction */
+    --success-mint: #10b981;          /* Crisp emerald mint for items completed */
+    --warning-amber: #f59e0b;         /* Warning amber for critical alerts */
+    
+    /* Structural Accents */
+    --border-subtle: #e2e8f0;         /* Clean division lines */
+    --bg-nested-row: #f1f5f9;         /* Accent highlights for list items */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.container {
+    width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+header h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+header p {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+}
+
+/* Base Layout Component */
+.top-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+/* Card Presentation Framework */
+.card {
+    background: var(--bg-card);
+    padding: 26px;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    margin-bottom: 24px;
+}
+
+.card h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+
+/* Text forms and standard label components */
+label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.section-sub-label {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+input,
+select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background-color: #fff;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* Button UI Actions */
+button {
+    width: 100%;
+    padding: 12px 16px;
+    margin-top: 18px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background: var(--primary-hover);
+}
+
+button:active {
+    transform: scale(0.99);
+}
+
+/* Performance Tracker Rows */
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dashboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+}
+
+.dashboard-item span {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.dashboard-item strong {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* Recommendations Layout Split */
+.recommendations-split-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.rec-column-left, .rec-column-right {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Custom Textarea Formatting */
+textarea {
+    width: 100%;
+    height: 110px;
+    padding: 12px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: none;
+    background-color: #fff;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+#llmBtn {
+    margin-top: 12px;
+    padding: 10px;
+}
+
+.llm-response-box {
+    margin-top: 14px;
+    padding: 14px;
+    background: var(--bg-surface);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+/* Notification Banners and Auto recommendation system rows */
+.recommendation-item {
+    padding: 12px 14px;
+    background: #fffbeb;
+    border-left: 4px solid var(--warning-amber);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 0.92rem;
+    color: #92400e;
+    font-weight: 500;
+}
+
+.recommendation-item.status-empty {
+    background: var(--bg-surface);
+    border-left-color: var(--text-secondary);
+    color: var(--text-secondary);
+}
+
+.recommendation-item.status-good {
+    background: #ecfdf5;
+    border-left-color: var(--success-mint);
+    color: #065f46;
+}
+
+/* Calendars & Completed task items logs */
+.plan-item {
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: #f0fdf4;
+    border-left: 4px solid var(--success-mint);
+    border-radius: 8px;
+}
+
+.plan-item h4 {
+    color: #065f46;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.plan-item p {
+    font-size: 0.9rem;
+    color: #1f2937;
+}
+
+.task-item {
+    padding: 14px;
+    margin-bottom: 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.task-item:hover {
+    background: var(--bg-nested-row);
+}
+
+.task-item input {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    accent-color: var(--success-mint);
+    cursor: pointer;
+}
+
+.empty-notice {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-style: italic;
+}
+
+/* Viewport Adjustments */
+@media(max-width: 992px) {
+    .container { width: 95%; }
+    .top-section, .recommendations-split-container { grid-template-columns: 1fr; }
+}
