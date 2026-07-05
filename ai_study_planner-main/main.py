@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
-from models import StudyGoal
-from scheduler import generate_study_plan
-from storage import study_goals, tasks
+from backend.models import StudyGoal, ChatRequest
+from backend.scheduler import generate_study_plan
+from backend.storage import study_goals, tasks
 from fastapi.middleware.cors import CORSMiddleware
+from llm import llm_chat
 
 app = FastAPI(
     title="Study Planner API",
@@ -51,12 +52,12 @@ async def create_study_plan(goal:StudyGoal):
 
 
 @app.get("/tasks")
-def get_tasks():
+async def get_tasks():
     return tasks
 
 
 @app.patch("/tasks/{task_id}")
-def update_task(task_id: int):
+async def update_task(task_id: int):
     for task in tasks:
         if task["id"] == task_id:
             if task["status"] == "completed":
@@ -70,7 +71,7 @@ def update_task(task_id: int):
 
 
 @app.get("/dashboard")
-def get_dashboard():
+async def get_dashboard():
     subjects = len(
         set(
             goal["subject"] for goal in study_goals
@@ -99,73 +100,138 @@ def get_dashboard():
             "progress": progress
            }
 
-
 @app.get("/recommendations")
-def get_recommendations():
-
-    recommendations = []
-
-    pending_tasks = [
-        task for task in tasks
-        if task["status"] == "pending"
-    ]
-
-    completed_tasks = [
-        task for task in tasks
-        if task["status"] == "completed"
-    ]
+async def get_recommendations():
 
     total_tasks = len(tasks)
+
+    completed_tasks = len([
+        task for task in tasks
+        if task["status"] == "completed"
+    ])
+
+    pending_tasks = total_tasks - completed_tasks
 
     progress = 0
 
     if total_tasks > 0:
-        progress = (
-            len(completed_tasks) / total_tasks
-        ) * 100
-
-    # Rule 1
+        progress = round(
+            (completed_tasks / total_tasks) * 100
+        )
 
     if progress < 30:
-        recommendations.append(
-            "⚠️ You are behind schedule. Complete at least one session today."
+
+        recommendation = (
+            "⚠️ You are behind schedule. Complete at least one study session today."
         )
 
-    # Rule 2
+    elif progress < 70:
 
-    if len(pending_tasks) > 5:
-        recommendations.append(
-            "📚 Multiple study sessions are pending. Consider increasing study hours."
+        recommendation = (
+            "📚 Good progress. Focus on completing pending tasks."
         )
 
-    # Rule 3
+    elif progress < 100:
 
-    hard_subjects = [
-        task for task in pending_tasks
-        if task.get("difficulty") == "Hard"
-    ]
-
-    if len(hard_subjects) > 0:
-        recommendations.append(
-            "🔥 Focus on hard subjects first."
+        recommendation = (
+            "🔥 Great work! You're almost finished."
         )
 
-    # Rule 4
+    else:
 
-    if progress >= 80:
-        recommendations.append(
-            "🎉 Great progress! Focus on revision."
+        recommendation = (
+            "🎉 Congratulations! All study sessions completed."
         )
+    print(recommendation)
+    return {
 
-    # Default
+        "progress": progress,
 
-    if len(recommendations) == 0:
-        recommendations.append(
-            "✅ You are on track with your study plan."
-        )
+        "completed_tasks": completed_tasks,
+
+        "pending_tasks": pending_tasks,
+
+        "total_tasks": total_tasks,
+
+        "recommendation": recommendation
+    }
+
+# @app.get("/recommendations")
+# async def get_recommendations():
+
+#     recommendations = []
+
+#     pending_tasks = [
+#         task for task in tasks
+#         if task["status"] == "pending"
+#     ]
+
+#     completed_tasks = [
+#         task for task in tasks
+#         if task["status"] == "completed"
+#     ]
+
+#     total_tasks = len(tasks)
+
+#     progress = 0
+
+#     if total_tasks > 0:
+#         progress = (
+#             len(completed_tasks) / total_tasks
+#         ) * 100
+
+#     # Rule 1
+
+#     if progress < 30:
+#         recommendations.append(
+#             "⚠️ You are behind schedule. Complete at least one session today."
+#         )
+
+#     # Rule 2
+
+#     if len(pending_tasks) > 5:
+#         recommendations.append(
+#             "📚 Multiple study sessions are pending. Consider increasing study hours."
+#         )
+
+#     # Rule 3
+
+#     hard_subjects = [
+#         task for task in pending_tasks
+#         if task.get("difficulty") == "Hard"
+#     ]
+
+#     if len(hard_subjects) > 0:
+#         recommendations.append(
+#             "🔥 Focus on hard subjects first."
+#         )
+
+#     # Rule 4
+
+#     if progress >= 80:
+#         recommendations.append(
+#             "🎉 Great progress! Focus on revision."
+#         )
+
+#     # Default
+
+#     if len(recommendations) == 0:
+#         recommendations.append(
+#             "✅ You are on track with your study plan."
+#         )
+
+#     return {
+#         "recommendations": recommendations
+#     }
+
+
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    
+    response = llm_chat(request.query)
 
     return {
-        "recommendations": recommendations
+        "response": response
     }
 
 # around 5 to 6 apis will create for the study planner, 

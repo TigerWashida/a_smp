@@ -1,0 +1,1186 @@
+/* =========================
+   THEME VARIABLES
+========================= */
+
+:root {
+
+    --bg-color: #f5f7fb;
+    --sidebar-bg: #ffffff;
+    --card-bg: #ffffff;
+
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+
+    --border-color: #e5e7eb;
+
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+
+    --success-color: #22c55e;
+
+    --shadow:
+        0 4px 12px rgba(0,0,0,0.08);
+}
+
+body.dark-theme {
+
+    --bg-color: #0b0d14;
+    --sidebar-bg: #111827;
+    --card-bg: #151923;
+
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+
+    --border-color: #252a38;
+
+    --primary-color: #6366f1;
+    --primary-hover: #7c7ff5;
+
+    --success-color: #22c55e;
+
+    --shadow:
+        0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* =========================
+   RESET
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-color);
+    color: var(--text-primary);
+
+    font-family:
+        Inter,
+        Segoe UI,
+        sans-serif;
+
+    transition: all .3s ease;
+}
+
+/* =========================
+   APP LAYOUT
+========================= */
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+
+    border-right:
+        1px solid var(--border-color);
+
+    padding: 24px;
+
+    position: sticky;
+    top: 0;
+
+    height: 100vh;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 40px;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+
+    border-radius: 14px;
+
+    background: var(--primary-color);
+    color: white;
+}
+
+.logo-container h2 {
+    font-size: 24px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.nav-item {
+    padding: 14px 18px;
+    margin-bottom: 10px;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+.nav-item:hover {
+    background:
+        rgba(99,102,241,0.15);
+}
+
+.nav-item.active {
+    background:
+        var(--primary-color);
+
+    color: white;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+}
+
+/* =========================
+   PAGE HEADER
+========================= */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+}
+
+.page-header p {
+    color:
+        var(--text-secondary);
+
+    margin-top: 5px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.primary-btn {
+    background:
+        var(--primary-color);
+
+    color: white;
+
+    border: none;
+
+    padding: 12px 20px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
+
+.primary-btn:hover {
+    background:
+        var(--primary-hover);
+}
+
+.secondary-btn {
+    background:
+        #d1d5db;
+
+    border: none;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+}
+
+/* =========================
+   DASHBOARD LAYOUT
+========================= */
+
+.dashboard-layout {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.6fr)
+        minmax(320px, 0.8fr);
+
+    gap: 24px;
+
+    align-items: start;
+
+    margin-bottom: 25px;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.right-column .card {
+    margin-bottom: 0;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card,
+.schedule-card {
+    background:
+        var(--card-bg);
+
+    border:
+        1px solid var(--border-color);
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    box-shadow:
+        var(--shadow);
+
+    margin-bottom: 24px;
+}
+
+.schedule-card {
+    align-self: start;
+}
+
+.card-header {
+    margin-bottom: 20px;
+}
+
+.card-header h3 {
+    font-size: 20px;
+}
+
+/* =========================
+   SCHEDULE HEADER
+========================= */
+
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 18px;
+}
+
+.schedule-header h3 {
+    font-size: 20px;
+}
+
+/* =========================
+   NOW BUTTON
+========================= */
+
+.now-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(99, 102, 241, 0.45);
+
+    padding: 8px 16px;
+
+    border-radius: 999px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(99, 102, 241, 0.95),
+            rgba(139, 92, 246, 0.9)
+        );
+
+    box-shadow:
+        0 8px 22px rgba(99, 102, 241, 0.28);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.now-btn:hover {
+    transform: translateY(-1px);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(124, 127, 245, 1),
+            rgba(168, 85, 247, 0.95)
+        );
+
+    box-shadow:
+        0 10px 28px rgba(99, 102, 241, 0.38);
+}
+
+.now-btn:active {
+    transform: scale(0.96);
+
+    box-shadow:
+        0 5px 14px rgba(99, 102, 241, 0.24);
+}
+
+/* =========================
+   SCHEDULE VIEW
+========================= */
+
+/* =========================
+   SOFT ELEGANT SCHEDULE VIEW
+========================= */
+
+#scheduleContainer {
+    height: 760px;
+    overflow-y: auto;
+
+    padding-right: 12px;
+    padding-top: 34px;
+    padding-bottom: 44px;
+}
+
+.schedule-grid {
+    position: relative;
+}
+
+/* Each hour row */
+.calendar-row {
+    display: flex;
+    position: relative;
+}
+
+/* Time labels */
+.calendar-time {
+    width: 90px;
+
+    padding-right: 18px;
+
+    text-align: right;
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+
+    color: rgba(148, 163, 184, 0.6);
+
+    transform: translateY(-8px);
+}
+
+/* Horizontal timeline area */
+.calendar-line {
+    flex: 1;
+
+    position: relative;
+
+    border-top:
+        1px solid rgba(148, 163, 184, 0.07);
+}
+
+/* Soft vertical timeline */
+.calendar-line::before {
+    content: "";
+
+    position: absolute;
+
+    left: 14px;
+    top: 0;
+
+    width: 1px;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(99, 102, 241, 0.04),
+            rgba(99, 102, 241, 0.2),
+            rgba(99, 102, 241, 0.04)
+        );
+}
+
+/* Softer hour dot */
+.calendar-line::after {
+    content: "";
+
+    position: absolute;
+
+    left: 10px;
+    top: -5px;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #151923;
+
+    border:
+        1px solid rgba(99, 102, 241, 0.35);
+
+    box-shadow:
+        0 0 0 3px rgba(99, 102, 241, 0.04);
+
+    z-index: 2;
+}
+
+/* Very subtle hover */
+.calendar-row:hover .calendar-line {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(99, 102, 241, 0.035),
+            transparent 60%
+        );
+}
+
+/* Task card */
+.schedule-task-card {
+    position: absolute;
+
+    left: 135px;
+    right: 34px;
+
+    padding: 18px 22px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(22, 29, 48, 0.86),
+            rgba(18, 24, 42, 0.78)
+        );
+
+    border:
+        1px solid rgba(99, 102, 241, 0.24);
+
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    z-index: 5;
+
+    box-sizing: border-box;
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+/* Softer accent line */
+.schedule-task-card::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 18px;
+    bottom: 18px;
+
+    width: 3px;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(99, 102, 241, 0.85),
+            rgba(139, 92, 246, 0.75)
+        );
+
+    box-shadow:
+        0 0 12px rgba(99, 102, 241, 0.35);
+}
+
+.schedule-task-card:hover {
+    transform: translateY(-1px);
+
+    border-color:
+        rgba(99, 102, 241, 0.38);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(25, 34, 58, 0.9),
+            rgba(20, 27, 48, 0.82)
+        );
+
+    box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.28),
+        0 0 22px rgba(99, 102, 241, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.schedule-task-title {
+    font-size: 16px;
+    font-weight: 800;
+
+    color: rgba(248, 250, 252, 0.96);
+
+    margin-bottom: 7px;
+}
+
+.schedule-task-meta {
+    font-size: 12px;
+    font-weight: 700;
+
+    color: rgba(148, 163, 184, 0.74);
+
+    letter-spacing: 0.25px;
+}
+
+/* Current time line */
+.current-time-line {
+    position: absolute;
+
+    left: 90px;
+    right: 10px;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(239, 68, 68, 0.95),
+            rgba(239, 68, 68, 0.55),
+            rgba(239, 68, 68, 0)
+        );
+
+    box-shadow:
+        0 0 12px rgba(239, 68, 68, 0.55);
+
+    z-index: 9;
+}
+
+.current-time-line::before {
+    content: "";
+
+    position: absolute;
+
+    left: -6px;
+    top: -5px;
+
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+
+    background:
+        #ef4444;
+
+    box-shadow:
+        0 0 12px rgba(239, 68, 68, 0.65),
+        0 0 0 4px rgba(239, 68, 68, 0.08);
+}
+
+/* =========================
+   SCROLLBARS
+========================= */
+
+#scheduleContainer::-webkit-scrollbar,
+#taskTracker::-webkit-scrollbar {
+    width: 8px;
+}
+
+#scheduleContainer::-webkit-scrollbar-track,
+#taskTracker::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#scheduleContainer::-webkit-scrollbar-thumb,
+#taskTracker::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.45);
+    border-radius: 999px;
+}
+
+#scheduleContainer::-webkit-scrollbar-thumb:hover,
+#taskTracker::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.7);
+}
+
+/* =========================
+   TASKS
+========================= */
+
+.task-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px;
+
+    margin-bottom: 15px;
+
+    border-radius: 14px;
+
+    background:
+        rgba(255,255,255,0.04);
+}
+
+.task-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.task-time {
+    background:
+        rgba(255,255,255,0.08);
+
+    padding: 8px 12px;
+
+    border-radius: 10px;
+
+    white-space: nowrap;
+}
+
+#taskTracker {
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* =========================
+   COMPLETION
+========================= */
+
+.completion-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+#completionCircle {
+    width: 140px;
+    height: 140px;
+
+    margin: auto;
+
+    border-radius: 50%;
+
+    background:
+        conic-gradient(
+            var(--success-color) 0deg,
+            var(--success-color) 240deg,
+            #b2162a 240deg
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.completion-recommendation {
+    margin-top: 20px;
+
+    text-align: center;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    max-width: 280px;
+
+    color: var(--text-secondary);
+}
+
+/* =========================
+   CHART
+========================= */
+
+.energy-card {
+    height: auto;
+}
+
+.compact-energy-card {
+    height: 230px;
+}
+
+.compact-energy-card .card-header {
+    margin-bottom: 10px;
+}
+
+.compact-energy-card .card-header h3 {
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+#energyChart {
+    width: 100% !important;
+    height: 150px !important;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(0,0,0,.75);
+
+    backdrop-filter:
+        blur(8px);
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+}
+
+.modal-content {
+    width: 450px;
+
+    background:
+        var(--card-bg);
+
+    color:
+        var(--text-primary);
+
+    border-radius: 20px;
+
+    padding: 25px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+.modal-content input,
+.modal-content select {
+    padding: 12px;
+
+    border-radius: 10px;
+
+    border:
+        1px solid var(--border-color);
+
+    background:
+        var(--bg-color);
+
+    color:
+        var(--text-primary);
+}
+
+/* =========================
+   THEME OPTION
+========================= */
+
+.theme-option {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 14px;
+
+    margin-top: 12px;
+
+    border:
+        1px solid var(--border-color);
+
+    border-radius: 12px;
+
+    cursor: pointer;
+}
+
+.theme-option:hover {
+    background:
+        rgba(99,102,241,0.08);
+}
+
+input[type="radio"] {
+    accent-color: var(--primary-color);
+
+    width: 18px;
+    height: 18px;
+
+    cursor: pointer;
+}
+
+/* =========================
+   CHAT BUTTON
+========================= */
+
+.chat-button {
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    width: 65px;
+    height: 65px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    font-size: 28px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+
+    box-shadow:
+        0 10px 30px rgba(99,102,241,.35);
+
+    z-index: 999;
+}
+
+/* =========================
+   CHAT WINDOW
+========================= */
+
+.chat-window {
+    position: fixed;
+
+    right: 25px;
+    bottom: 100px;
+
+    width: 420px;
+    height: 580px;
+
+    display: none;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border-radius: 22px;
+
+    background:
+        var(--card-bg);
+
+    border:
+        1px solid var(--border-color);
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,.25);
+
+    z-index: 999;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 16px 20px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+}
+
+.chat-title {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.chat-title h4 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.chat-title span {
+    font-size: 12px;
+    opacity: .8;
+}
+
+.ai-avatar {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background:
+        rgba(255,255,255,.2);
+
+    font-size: 20px;
+}
+
+.close-btn {
+    background: transparent;
+
+    border: none;
+
+    color: white;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+.chat-messages {
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 16px;
+
+    background:
+        var(--bg-color);
+}
+
+.message-row {
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: 15px;
+}
+
+.user-row {
+    align-items: flex-end;
+}
+
+.ai-row {
+    align-items: flex-start;
+}
+
+.message-label {
+    font-size: 12px;
+
+    margin-bottom: 5px;
+
+    opacity: .7;
+
+    font-weight: 600;
+}
+
+.user-message {
+    margin-left: auto;
+
+    max-width: 75%;
+
+    padding: 12px 16px;
+
+    border-radius:
+        18px 18px 4px 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+
+    color: white;
+}
+
+.ai-message {
+    max-width: 75%;
+
+    padding: 12px 16px;
+
+    border-radius:
+        18px 18px 18px 4px;
+
+    background:
+        rgba(99,102,241,.12);
+
+    border-left:
+        4px solid #6366f1;
+}
+
+.chat-input-area {
+    display: flex;
+
+    gap: 10px;
+
+    padding: 15px;
+
+    border-top:
+        1px solid var(--border-color);
+}
+
+.chat-input-area input {
+    flex: 1;
+
+    padding: 14px;
+
+    border: none;
+    outline: none;
+
+    border-radius: 14px;
+
+    background:
+        rgba(99,102,241,.08);
+
+    color: inherit;
+}
+
+.send-btn {
+    width: 50px;
+    height: 50px;
+
+    border: none;
+
+    cursor: pointer;
+
+    color: white;
+
+    font-size: 18px;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast {
+    position: fixed;
+
+    top: 25px;
+    right: 25px;
+
+    background:
+        #22c55e;
+
+    color: white;
+
+    padding: 16px 22px;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+
+    opacity: 0;
+
+    transform:
+        translateX(120%);
+
+    transition:
+        all .3s ease;
+
+    z-index: 9999;
+}
+
+.show-toast {
+    opacity: 1;
+
+    transform:
+        translateX(0);
+}
+
+/* =========================
+   UTILITIES
+========================= */
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+
+    #scheduleContainer {
+        height: 650px;
+    }
+
+    .compact-energy-card {
+        height: 260px;
+    }
+
+    #energyChart {
+        height: 180px !important;
+    }
+}
+
+@media (max-width: 1000px) {
+
+    .sidebar {
+        width: 90px;
+    }
+
+    .logo-container h2 {
+        display: none;
+    }
+
+    .nav-item {
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,21 @@
+P1: 
+##### Issues ########
+1. Today's tasks - Time format/time window - add start and end range, Lets keep AM and PM 12 hour format, 
+    There should be no overlap, if overlap occurs then there should be a message saying that error/can't create
+2. 
+
+
+##### Pending ########
+1. Created task api - create_task
+2. Connect Recommendation to AI
+3. Connect Chat to AI
+
+
+
+P2: Issues
+1. Today's Schedule View - It should show as in full timeframe, reference google calender [Taiga]
+2. Handle Subject Names - Should be standard format
+3. Add topic in tasks
+4. Logo change[Taiga] - for Chatbot, SMP
+
+
