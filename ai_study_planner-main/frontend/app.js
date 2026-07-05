@@ -42,11 +42,31 @@ function showPage(pageId, element) {
    MODAL
 =================================== */
 
+// function openModal() {
+
+//     document.getElementById(
+//         "studyModal"
+//     ).style.display = "flex";
+// }
+
 function openModal() {
+
 
     document.getElementById(
         "studyModal"
     ).style.display = "flex";
+
+    if (!deadlineCalendar) {
+
+        initializeDeadlineCalendar();
+
+    } else {
+
+        deadlineCalendar.render();
+
+        deadlineCalendar.updateSize();
+    }
+
 }
 
 function closeModal() {
@@ -926,6 +946,64 @@ function scrollToCurrentTime() {
         top: targetScrollTop,
         behavior: "smooth"
     });
+}
+
+let deadlineCalendar;
+
+
+function initializeDeadlineCalendar() {
+
+
+const calendarEl =
+    document.getElementById(
+        "deadlineCalendar"
+    );
+
+if (!calendarEl)
+    return;
+
+deadlineCalendar =
+    new FullCalendar.Calendar(
+
+        calendarEl,
+
+        {
+
+            initialView: "dayGridMonth",
+
+            height: 320,
+
+            headerToolbar: {
+
+                left: "prev,next",
+
+                center: "title",
+
+                right: ""
+
+            },
+
+            dateClick(info) {
+
+                document.getElementById(
+                    "examDate"
+                ).value =
+                    info.dateStr;
+
+                document.getElementById(
+                    "selectedDeadline"
+                ).innerHTML =
+
+                    "Deadline: <strong>" +
+                    info.dateStr +
+                    "</strong>";
+            }
+        }
+
+    );
+
+deadlineCalendar.render();
+
 }
 
 /* ===================================

@@ -756,6 +756,23 @@ body {
     height: 150px !important;
 }
 
+.selected-date{
+
+
+    margin-top:15px;
+
+    text-align:center;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    background:#eef4ff;
+
+    font-weight:600;
+
+}
+
 /* =========================
    MODAL
 ========================= */
@@ -896,8 +913,8 @@ input[type="radio"] {
     right: 25px;
     bottom: 100px;
 
-    width: 420px;
-    height: 580px;
+    width: 700px;
+    height: 600px;
 
     display: none;
     flex-direction: column;

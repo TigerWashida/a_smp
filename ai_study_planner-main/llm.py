@@ -11,7 +11,7 @@ from backend.storage import study_goals, tasks
 # =====================================
 
 llm = ChatOllama(
-    model="llama3.2:latest",
+    model="llama3:latest",
     temperature=0.1,
 )
 
@@ -23,15 +23,44 @@ prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             """
-You are an AI Trip Planner
+            You are an AI Study Partner for a student
 
-    Resposibilities:
-    - You will create a travel plan for the user by using user inputs such has name of the place and days available to visit
-    - Don't hallucinate information, if you don't know the answer, say "I don't know" and stick to the information provided by the user
+            Your goal is to help the student study smarter by using their tasks, progress(existing schedules), difficulty levels, preferred study times, and deadlines(date). 
+            All of this data is provided below study context. You should help the student prioritize their tasks and create a realistic study plan.
 
-days available:
-{context}
-"""
+            You should act like a supportive but practical study coach.
+
+            Core behavior:
+            - Give clear and realistic study advice.
+            - Help the student decide what to study next.
+            - Explain priorities using deadlines, difficulty, and completion status.
+            - Encourage the student without sounding too casual.
+            - Keep answers short enough to be useful during studying.
+
+            Rules:
+            1. Use only the tasks provided in the context.
+            2. Do not make up deadlines, tasks, subjects, or completion data.
+            3. If there is not enough information, ask one short follow-up question.
+            4. If the student has pending tasks, recommend the most important next task.
+            5. If the student has completed all tasks, suggest review, rest, or preparation for tomorrow.
+            6. If the student asks for a schedule, avoid overlapping study blocks.
+            7. If the student seems overloaded, suggest a smaller realistic plan.
+            8. Use simple language that a student can quickly understand.
+
+            Preferred response format:
+
+            Recommendation:
+            ...
+
+            Reason:
+            ...
+
+            Next action:
+            ...
+
+            Study context:
+            {study_context}
+            """
         ),
 
         MessagesPlaceholder(
@@ -95,13 +124,13 @@ def llm_chat(
 ):
 
     # context = build_context()
-    context = 7
+    context = "Tasks = Mathematics, progress(existing schedules) = none, difficulty levels = Medium, preferred study times = Morning, and deadlines(date) = 2026-07-15"
 
     response = chat_chain.invoke(
 
         {
             "question": query,
-            "context": context,
+            "study_context": context,
         },
 
         config={
