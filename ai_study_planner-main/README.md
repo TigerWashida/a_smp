@@ -31,5 +31,5 @@ Pluggins
         ("human", "{input}"),
     ])
 
-    ~/documents/smp/bin/activate
+    source ~/documents/smp/bin/activate
     uvicorn main:app --reload    

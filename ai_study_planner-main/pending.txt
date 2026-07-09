@@ -1,12 +1,8 @@
 UI:
 
-1. Task Overalap handling
+1. In today's schedule, it shows current date as a default, and add date selector to view different date schedules
+2. Be able to see schedules from calendar view as well
 
 Backend:
-1.Task Overalap handling
-2.Connect Study context data to Prompt 
 3.Propmpt Enhancement for better output structure
 4.Persist our data - store in json instead of lists
-
-# Last moment changes
-1.  Create Study Plan - Enhancement

@@ -6,7 +6,7 @@ class StudyGoal(BaseModel):
     total_hours: int
     difficulty: str
     preferred_slot: str
-    exam_date: date
+    deadline: date
 
 from pydantic import BaseModel
 
