@@ -332,74 +332,177 @@
     <!-- MODAL -->
 
     <div id="studyModal" class="modal">
-
         <div class="modal-content">
 
             <h2>
-                Create Study Plan
+
+                📚 Create Study Plan
+
             </h2>
 
-            <input id="subject" type="text" placeholder="Subject">
+            <div class="modal-grid">
 
-            <input id="hours" type="number" placeholder="Total Hours">
+                <!-- Subject -->
 
-            <!-- <input id="examDate" type="date"> -->
+                <div>
 
-            <label>
-            📅 Deadline Date
+                    <label>
 
-            </label>
-            <div id="deadlineCalendar">
+                        Subject
+
+                    </label>
+
+                    <input
+                        id="subject"
+                        type="text"
+                        placeholder="Psychology">
+
+                </div>
+
+                <!-- Hours -->
+
+                <div>
+
+                    <label>
+
+                        Total Hours
+
+                    </label>
+
+                    <input
+                        id="hours"
+                        type="number"
+                        placeholder="10">
+
+                </div>
+
+                <!-- Difficulty -->
+
+                <div>
+
+                    <label>
+
+                        Difficulty
+
+                    </label>
+
+                    <select id="difficulty">
+
+                        <option>Easy</option>
+                        <option>Medium</option>
+                        <option>Hard</option>
+
+                    </select>
+
+                </div>
+
+                <!-- Preferred Slot -->
+
+                <div>
+
+                    <label>
+
+                        Preferred Slot
+
+                    </label>
+
+                    <select id="slot">
+
+                        <option>Morning</option>
+                        <option>Afternoon</option>
+                        <option>Evening</option>
+
+                    </select>
+
+                </div>
+
+                <!-- Deadline -->
+
+                <div class="full-width">
+
+                    <label>
+
+                        📅 Deadline
+
+                    </label>
+
+                    <div
+                        class="deadline-picker"
+                        onclick="toggleDeadlineCalendar()">
+
+                        <span id="selectedDeadline">
+
+                            Select Deadline
+
+                        </span>
+
+                        <span>
+
+                            📅
+
+                        </span>
+
+                    </div>
+
+                    <!-- Hidden value sent to API -->
+
+                    <input
+                        type="hidden"
+                        id="examDate">
+
+                    <!-- Calendar Popup -->
+
+                    <!-- Calendar Dropdown -->
+
+                    <div
+                        id="deadlineCalendarPopup"
+                        class="deadline-popup hidden">
+
+                        <div class="deadline-popup-header">
+
+                            <span>
+
+                                Select Deadline
+
+                            </span>
+
+                            <button
+                                class="close-calendar-btn"
+                                onclick="toggleDeadlineCalendar()">
+
+                                ✕
+
+                            </button>
+
+                        </div>
+
+                        <div id="deadlineCalendar"></div>
+
+                    </div>
+
+                </div>
+
             </div>
-            <div
-                id="selectedDeadline"
-                class="selected-date">
-            No deadline selected
+
+            <div class="modal-actions">
+
+                <button
+                    class="secondary-btn"
+                    onclick="closeModal()">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    class="primary-btn"
+                    onclick="generatePlan()">
+
+                    Generate Plan
+
+                </button>
 
             </div>
-            <input
-            id="examDate"
-            type="hidden">
-
-            <select id="difficulty">
-
-                <option>
-                    Easy
-                </option>
-
-                <option>
-                    Medium
-                </option>
-
-                <option>
-                    Hard
-                </option>
-
-            </select>
-
-            <select id="slot">
-
-                <option>
-                    Morning
-                </option>
-
-                <option>
-                    Afternoon
-                </option>
-
-                <option>
-                    Evening
-                </option>
-
-            </select>
-
-            <button class="primary-btn" onclick="generatePlan()">
-                Generate Plan
-            </button>
-
-            <button class="secondary-btn" onclick="closeModal()">
-                Cancel
-            </button>
 
         </div>
 

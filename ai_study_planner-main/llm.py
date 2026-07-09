@@ -12,7 +12,7 @@ from backend.storage import study_goals, tasks
 
 llm = ChatOllama(
     model="llama3:latest",
-    temperature=0.1,
+    temperature=0,
 )
 
 # =====================================
@@ -118,19 +118,61 @@ chat_chain = RunnableWithMessageHistory(
 # Chat
 # =====================================
 
+def build_study_context():
+
+    if len(study_goals) == 0 and len(tasks) == 0:
+        return """
+No study goals or tasks have been created yet.
+Tell the student to create a study plan first before asking for recommendations.
+"""
+
+    goals_text = ""
+
+    for goal in study_goals:
+
+        goals_text += f"""
+Subject: {goal.get("subject")}
+Total Hours: {goal.get("total_hours")}
+Difficulty: {goal.get("difficulty")}
+Preferred Slot: {goal.get("preferred_slot")}
+Deadline Date: {goal.get("exam_date")}
+"""
+
+    tasks_text = ""
+
+    for task in tasks:
+
+        tasks_text += f"""
+Task ID: {task.get("id")}
+Day: {task.get("day")}
+Subject: {task.get("subject")}
+Hours: {task.get("hours")}
+Difficulty: {task.get("difficulty")}
+Preferred Slot: {task.get("preferred_slot")}
+Status: {task.get("status")}
+"""
+
+    return f"""
+Study Goals:
+{goals_text}
+
+Tasks:
+{tasks_text}
+"""
+
+
 def llm_chat(
     query: str,
     session_id: str = "default"
 ):
 
-    # context = build_context()
-    context = "Tasks = Mathematics, progress(existing schedules) = none, difficulty levels = Medium, preferred study times = Morning, and deadlines(date) = 2026-07-15"
+    study_context = build_study_context()
 
     response = chat_chain.invoke(
 
         {
             "question": query,
-            "study_context": context,
+            "study_context": study_context,
         },
 
         config={

@@ -27,12 +27,22 @@ async def health_check():
 async def create_study_plan(goal:StudyGoal):
     # print(goal)
     study_goals.append(goal.model_dump())
-    plan = generate_study_plan(
-            goal.subject, 
+    try:
+
+        plan = generate_study_plan(
+            goal.subject,
             goal.total_hours,
             goal.difficulty,
             goal.preferred_slot,
-            goal.exam_date
+            goal.exam_date,
+            tasks
+        )
+
+    except ValueError as error:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(error)
         )
     
     for item in plan:
@@ -43,6 +53,8 @@ async def create_study_plan(goal:StudyGoal):
             "hours": item["hours"],
             "difficulty": item["difficulty"],
             "preferred_slot": item["preferred_slot"],
+            "start_hour": item["start_hour"],
+            "end_hour": item["end_hour"],
             "status": "pending"
         })
 

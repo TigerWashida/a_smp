@@ -1,9 +1,98 @@
 const API_BASE = "http://localhost:8000";
 
+
 /* ===================================
    NAVIGATION
 =================================== */
+let deadlineCalendar;
+let calendarOpen = false;
 
+function toggleDeadlineCalendar(){
+
+    const popup =
+        document.getElementById(
+            "deadlineCalendarPopup"
+        );
+
+    if(!deadlineCalendar){
+
+        initializeDeadlineCalendar();
+    }
+
+    calendarOpen = !calendarOpen;
+
+    popup.classList.toggle(
+        "hidden",
+        !calendarOpen
+    );
+
+    if(calendarOpen){
+
+        deadlineCalendar.updateSize();
+    }
+}
+
+function initializeDeadlineCalendar(){
+
+    const el =
+        document.getElementById(
+            "deadlineCalendar"
+        );
+
+    deadlineCalendar =
+        new FullCalendar.Calendar(
+            el,
+            {
+
+                initialView:"dayGridMonth",
+
+                height:280,
+
+                headerToolbar:{
+
+                    left:"prev,next",
+
+                    center:"title",
+
+                    right:""
+
+                },
+
+                dateClick(info){
+
+                    document.getElementById(
+                        "examDate"
+                    ).value =
+                        info.dateStr;
+
+                    const formatted =
+                        new Date(info.dateStr)
+                        .toLocaleDateString(
+                            "en-GB",
+                            {
+
+                                day:"numeric",
+
+                                month:"short",
+
+                                year:"numeric"
+
+                            }
+                        );
+
+                    document.getElementById(
+                        "selectedDeadline"
+                    ).innerHTML =
+                        "📅 " + formatted;
+
+                    toggleDeadlineCalendar();
+                }
+
+            }
+        );
+
+    deadlineCalendar.render();
+}
 function showPage(pageId, element) {
 
     document.querySelectorAll(".page")
@@ -49,24 +138,23 @@ function showPage(pageId, element) {
 //     ).style.display = "flex";
 // }
 
-function openModal() {
-
+function openModal(){
 
     document.getElementById(
         "studyModal"
     ).style.display = "flex";
 
-    if (!deadlineCalendar) {
+    if(!deadlineCalendar){
 
         initializeDeadlineCalendar();
 
-    } else {
-
-        deadlineCalendar.render();
-
-        deadlineCalendar.updateSize();
     }
 
+    setTimeout(()=>{
+
+        deadlineCalendar.updateSize();
+
+    },100);
 }
 
 function closeModal() {
@@ -189,19 +277,28 @@ async function generatePlan() {
         );
 
         const data =
-            await response.json();
+        await response.json();
 
-        console.log(data);
-
-        closeModal();
-
-        await loadDashboard();
-        await loadTasks();
-        await loadCompletionRecommendation();
+    if (!response.ok) {
 
         showToast(
-            "✅ Study Plan Created Successfully"
+            "❌ " + data.detail
         );
+
+        return;
+    }
+
+    console.log(data);
+
+    closeModal();
+
+    await loadDashboard();
+    await loadTasks();
+    await loadCompletionRecommendation();
+
+    showToast(
+        "✅ Study Plan Created Successfully"
+    );
 
     } catch (error) {
 
@@ -339,13 +436,16 @@ async function loadTasks() {
 
         let html = "";
 
-        let currentStartHour =
-            9;
-
         tasks.forEach((task) => {
 
-            const duration =
-                Number(task.hours);
+            const startHour =
+                Number(task.start_hour);
+
+            const endHour =
+                Number(task.end_hour);
+
+            const timeRange =
+                `${formatHour(startHour)} - ${formatHour(endHour)}`;
 
             html += `
 
@@ -370,15 +470,13 @@ async function loadTasks() {
 
                     <div class="task-time">
 
-                        ${formatHour(currentStartHour)}
+                        ${timeRange}
 
                     </div>
 
                 </div>
 
             `;
-
-            currentStartHour += duration;
         });
 
         if (tracker) {
@@ -830,16 +928,19 @@ function renderSchedule(tasks) {
     let taskHtml =
         "";
 
-    let currentStartHour =
-        9;
-
     tasks.forEach((task) => {
 
         const duration =
             Number(task.hours);
 
+        const startHour =
+            Number(task.start_hour);
+
+        const endHour =
+            Number(task.end_hour);
+
         const top =
-            currentStartHour * hourHeight;
+            startHour * hourHeight;
 
         const height =
             duration * hourHeight;
@@ -861,7 +962,7 @@ function renderSchedule(tasks) {
 
                 <div class="schedule-task-meta">
 
-                    ${duration} hrs • ${task.status}
+                    ${formatHour(startHour)} - ${formatHour(endHour)} • ${duration} hrs • ${task.status}
 
                 </div>
 
@@ -869,8 +970,6 @@ function renderSchedule(tasks) {
 
         `;
 
-        currentStartHour +=
-            duration;
     });
 
     container.innerHTML = `
@@ -946,64 +1045,6 @@ function scrollToCurrentTime() {
         top: targetScrollTop,
         behavior: "smooth"
     });
-}
-
-let deadlineCalendar;
-
-
-function initializeDeadlineCalendar() {
-
-
-const calendarEl =
-    document.getElementById(
-        "deadlineCalendar"
-    );
-
-if (!calendarEl)
-    return;
-
-deadlineCalendar =
-    new FullCalendar.Calendar(
-
-        calendarEl,
-
-        {
-
-            initialView: "dayGridMonth",
-
-            height: 320,
-
-            headerToolbar: {
-
-                left: "prev,next",
-
-                center: "title",
-
-                right: ""
-
-            },
-
-            dateClick(info) {
-
-                document.getElementById(
-                    "examDate"
-                ).value =
-                    info.dateStr;
-
-                document.getElementById(
-                    "selectedDeadline"
-                ).innerHTML =
-
-                    "Deadline: <strong>" +
-                    info.dateStr +
-                    "</strong>";
-            }
-        }
-
-    );
-
-deadlineCalendar.render();
-
 }
 
 /* ===================================

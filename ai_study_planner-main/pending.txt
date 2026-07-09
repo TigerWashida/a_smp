@@ -1,0 +1,12 @@
+UI:
+
+1. Task Overalap handling
+
+Backend:
+1.Task Overalap handling
+2.Connect Study context data to Prompt 
+3.Propmpt Enhancement for better output structure
+4.Persist our data - store in json instead of lists
+
+# Last moment changes
+1.  Create Study Plan - Enhancement
