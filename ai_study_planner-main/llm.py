@@ -15,66 +15,10 @@ llm = ChatOllama(
     temperature=0,
 )
 
+
 # =====================================
-# Prompt
+# BUILD STUDY CONTEXT
 # =====================================
-# prompt = ChatPromptTemplate.from_messages(
-#     [
-#         (
-#             "system",
-#             """
-#             You are an AI Study Partner for a student
-
-#             Your goal is to help the student study smarter by using their tasks, progress(existing schedules), difficulty levels, preferred study times, and deadlines(date). 
-#             All of this data is provided below study context. You should help the student prioritize their tasks and create a realistic study plan.
-
-#             You should act like a supportive but practical study coach.
-
-#             Core behavior:
-#             - Give clear and realistic study advice.
-#             - Help the student decide what to study next.
-#             - Explain priorities using deadlines, difficulty, and completion status.
-#             - Encourage the student without sounding too casual.
-#             - Keep answers short enough to be useful during studying.
-
-#             Rules:
-#             1. Use only the tasks provided in the context.
-#             2. Do not make up deadlines, tasks, subjects, or completion data.
-#             3. If there is not enough information, ask one short follow-up question.
-#             4. If the student has pending tasks, recommend the most important next task.
-#             5. If the student has completed all tasks, suggest review, rest, or preparation for tomorrow.
-#             6. If the student asks for a schedule, avoid overlapping study blocks.
-#             7. If the student seems overloaded, suggest a smaller realistic plan.
-#             8. Use simple language that a student can quickly understand.
-
-#             Preferred response format:
-
-#             Recommendation:
-#             ...
-
-#             Reason:
-#             ...
-
-#             Next action:
-#             ...
-
-#             Study context:
-#             {study_context}
-#             """
-#         ),
-
-#         MessagesPlaceholder(
-#             variable_name="chat_history"
-#         ),
-
-#         (
-#             "human",
-#             "{question}"
-#         )
-#     ]
-# )
-
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 def build_context():
 
@@ -84,16 +28,23 @@ def build_context():
     context.append("STUDENT OVERVIEW")
     context.append("=" * 60)
 
-    total_subjects = len(study_goals)
+    total_subjects = len(
+        set(
+            goal["subject"]
+            for goal in study_goals
+        )
+    )
 
-    completed = len([
-        t for t in tasks
-        if t["status"] == "completed"
+    completed_tasks = len([
+        task
+        for task in tasks
+        if task["status"] == "completed"
     ])
 
-    pending = len([
-        t for t in tasks
-        if t["status"] == "pending"
+    pending_tasks = len([
+        task
+        for task in tasks
+        if task["status"] == "pending"
     ])
 
     planned_hours = sum(
@@ -110,12 +61,35 @@ def build_context():
     context.append(f"Total Subjects : {total_subjects}")
     context.append(f"Planned Hours  : {planned_hours}")
     context.append(f"Completed Hours: {completed_hours}")
-    context.append(f"Completed Tasks: {completed}")
-    context.append(f"Pending Tasks  : {pending}")
+    context.append(f"Completed Tasks: {completed_tasks}")
+    context.append(f"Pending Tasks  : {pending_tasks}")
 
     context.append("")
     context.append("=" * 60)
-    context.append("CURRENT TASKS")
+    context.append("CURRENT STUDY GOALS")
+    context.append("=" * 60)
+
+    if not study_goals:
+
+        context.append("No study goals available.")
+
+    else:
+
+        for i, goal in enumerate(study_goals, start=1):
+
+            context.append(f"""
+Goal {i}
+
+Subject        : {goal["subject"]}
+Total Hours    : {goal["total_hours"]}
+Difficulty     : {goal["difficulty"]}
+Preferred Slot : {goal["preferred_slot"]}
+Deadline       : {goal["deadline"]}
+""")
+
+    context.append("")
+    context.append("=" * 60)
+    context.append("CURRENT ASSOCIATED TASKS")
     context.append("=" * 60)
 
     if not tasks:
@@ -139,6 +113,11 @@ Deadline       : {task["deadline"]}
 
     return "\n".join(context)
 
+
+# =====================================
+# PROMPT
+# =====================================
+
 prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -160,15 +139,15 @@ YOUR RESPONSIBILITIES
 
 You can help students:
 
-• Decide what to study next.
-• Prioritize pending tasks.
-• Explain study priorities.
-• Create realistic study schedules.
-• Suggest revision plans.
-• Improve productivity.
-• Balance workload.
-• Prepare for exams.
-• Answer questions about their current study plan.
+- Decide what to study next.
+- Prioritize pending tasks.
+- Explain study priorities.
+- Create realistic study schedules.
+- Suggest revision plans.
+- Improve productivity.
+- Balance workload.
+- Prepare for exams.
+- Answer questions about their current study plan.
 
 ====================================================
 DECISION MAKING
@@ -226,18 +205,18 @@ RESPONSE STYLE
 
 Your tone should be:
 
-• Professional
-• Encouraging
-• Practical
-• Supportive
-• Clear
+- Professional
+- Encouraging
+- Practical
+- Supportive
+- Clear
 
 Avoid:
 
-• Long paragraphs
-• Unnecessary explanations
-• Generic motivational speeches
-• Hallucinated information
+- Long paragraphs
+- Unnecessary explanations
+- Generic motivational speeches
+- Hallucinated information
 
 Write naturally like an experienced study mentor.
 
@@ -249,11 +228,11 @@ Always respond in Markdown.
 
 Formatting rules:
 
-• Use headings.
-• Maximum 2 sentences per paragraph.
-• Use bullet points whenever listing items.
-• Leave one blank line between sections.
-• Never return one large paragraph.
+- Use headings.
+- Maximum 2 sentences per paragraph.
+- Use bullet points whenever listing items.
+- Leave one blank line between sections.
+- Never return one large paragraph.
 
 ====================================================
 DEFAULT RESPONSE FORMAT
@@ -281,14 +260,14 @@ Return:
 
 ## Study Schedule
 
-| Date         | Time     | Subject     | Duration |
-|--------------|----------|-------------|----------|
-| July 8, 2026 | 09:00 AM | Mathematics | 2 Hours |
+| Date | Time | Subject | Duration |
+|------|------|---------|----------|
+| Use deadline from context | Use preferred slot from context | Use subject from context | Use task duration |
 
 ## Notes
 
-- ...
-- ...
+- Use only tasks from the study context.
+- Do not invent exact times if the context only gives Morning, Afternoon, or Evening.
 
 ====================================================
 IF USER ASKS FOR REVISION PLAN
@@ -333,15 +312,16 @@ Do not guess.
     ]
 )
 
+
 # =====================================
-# Chain
+# CHAIN
 # =====================================
 
 chain = prompt | llm
 
 
 # =====================================
-# Session Store
+# SESSION STORE
 # =====================================
 
 store = {}
@@ -361,48 +341,34 @@ def get_session_history(
 
 
 chat_chain = RunnableWithMessageHistory(
-
     chain,
-
     get_session_history,
-
     input_messages_key="question",
-
     history_messages_key="chat_history",
 )
 
 
 # =====================================
-# Chat
+# CHAT FUNCTION
 # =====================================
-
-study_context = build_context()
 
 def llm_chat(
     query: str,
     session_id: str = "default"
 ):
-    
-    response = chat_chain.invoke(
 
+    study_context = build_context()
+
+    response = chat_chain.invoke(
         {
             "question": query,
             "study_context": study_context,
         },
-
         config={
             "configurable": {
                 "session_id": session_id
             }
         }
-
     )
 
     return str(response.content)
-
-# while True:
-#     user_input = input("User: ")
-#     if user_input.lower() == "exit":
-#         break
-#     response = llm_chat(user_input)
-#     print("AI Trip Planner:", response)

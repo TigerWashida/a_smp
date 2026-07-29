@@ -117,19 +117,43 @@
 
                     <div class="schedule-card">
 
-                        <div class="schedule-header">
+                                <div class="schedule-header">
 
-                            <h3>
-                                Today's Schedule
-                            </h3>
+                                        <div>
 
-                            <button
-                                class="now-btn"
-                                onclick="scrollToCurrentTime()">
-                                ● Now
-                            </button>
+                                            <h3 id="dashboardDateTitle">
+                                                Today's Schedule
+                                            </h3>
 
-                        </div>
+                                            <p id="dashboardDateText" class="dashboard-date-text">
+                                                Today
+                                            </p>
+
+                                        </div>
+
+                                        <div class="dashboard-date-controls">
+
+                                            <button
+                                                class="date-nav-btn"
+                                                onclick="changeDashboardDate(-1)">
+                                                ←
+                                            </button>
+
+                                            <button
+                                                class="now-btn"
+                                                onclick="goToTodayDashboard()">
+                                                ● Now
+                                            </button>
+
+                                            <button
+                                                class="date-nav-btn"
+                                                onclick="changeDashboardDate(1)">
+                                                →
+                                            </button>
+
+                                        </div>
+
+                                    </div>
 
                         <div id="scheduleContainer"></div>
 
@@ -235,9 +259,23 @@
                         Tasks
                     </h1>
 
-                    <button class="primary-btn">
-                        + Create Task
-                    </button>
+                    <div class="task-view-toggle">
+
+                        <button
+                            id="taskDateModeBtn"
+                            class="task-mode-btn active"
+                            onclick="setTaskPageMode('date')">
+                            Date
+                        </button>
+
+                        <button
+                            id="taskLabelModeBtn"
+                            class="task-mode-btn"
+                            onclick="setTaskPageMode('label')">
+                            Label
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -332,12 +370,11 @@
     <!-- MODAL -->
 
     <div id="studyModal" class="modal">
+
         <div class="modal-content">
 
             <h2>
-
                 📚 Create Study Plan
-
             </h2>
 
             <div class="modal-grid">
@@ -347,9 +384,7 @@
                 <div>
 
                     <label>
-
                         Subject
-
                     </label>
 
                     <input
@@ -364,9 +399,7 @@
                 <div>
 
                     <label>
-
                         Total Hours
-
                     </label>
 
                     <input
@@ -381,9 +414,7 @@
                 <div>
 
                     <label>
-
                         Difficulty
-
                     </label>
 
                     <select id="difficulty">
@@ -401,9 +432,7 @@
                 <div>
 
                     <label>
-
                         Preferred Slot
-
                     </label>
 
                     <select id="slot">
@@ -421,9 +450,7 @@
                 <div class="full-width">
 
                     <label>
-
                         📅 Deadline
-
                     </label>
 
                     <div
@@ -431,28 +458,18 @@
                         onclick="toggleDeadlineCalendar()">
 
                         <span id="selectedDeadline">
-
                             Select Deadline
-
                         </span>
 
                         <span>
-
                             📅
-
                         </span>
 
                     </div>
 
-                    <!-- Hidden value sent to API -->
-
                     <input
                         type="hidden"
                         id="examDate">
-
-                    <!-- Calendar Popup -->
-
-                    <!-- Calendar Dropdown -->
 
                     <div
                         id="deadlineCalendarPopup"
@@ -461,17 +478,13 @@
                         <div class="deadline-popup-header">
 
                             <span>
-
                                 Select Deadline
-
                             </span>
 
                             <button
                                 class="close-calendar-btn"
                                 onclick="toggleDeadlineCalendar()">
-
                                 ✕
-
                             </button>
 
                         </div>
@@ -489,17 +502,13 @@
                 <button
                     class="secondary-btn"
                     onclick="closeModal()">
-
                     Cancel
-
                 </button>
 
                 <button
                     class="primary-btn"
                     onclick="generatePlan()">
-
                     Generate Plan
-
                 </button>
 
             </div>

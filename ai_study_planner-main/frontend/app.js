@@ -2,11 +2,162 @@ const API_BASE = "http://localhost:8000";
 
 
 /* ===================================
+   DASHBOARD DATE STATE
+=================================== */
+
+let allTasksCache = [];
+
+let selectedDashboardDate =
+    getTodayDateString();
+
+let taskPageMode =
+    "date";
+
+
+function getTodayDateString() {
+
+    const today =
+        new Date();
+
+    return formatDateForAPI(
+        today
+    );
+}
+
+
+function formatDateForAPI(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    return `${year}-${month}-${day}`;
+}
+
+
+function getTasksForSelectedDashboardDate() {
+
+    return allTasksCache.filter(task => {
+        return task.deadline === selectedDashboardDate;
+    });
+}
+
+
+function refreshDashboardScheduleForSelectedDate() {
+
+    const filteredTasks =
+        getTasksForSelectedDashboardDate();
+
+    renderTaskList(
+        filteredTasks
+    );
+
+    renderSchedule(
+        filteredTasks
+    );
+
+    updateDashboardDateTitle();
+}
+
+
+function updateDashboardDateTitle() {
+
+    const title =
+        document.getElementById(
+            "dashboardDateTitle"
+        );
+
+    const text =
+        document.getElementById(
+            "dashboardDateText"
+        );
+
+    if (!title || !text) {
+        return;
+    }
+
+    if (selectedDashboardDate === getTodayDateString()) {
+
+        title.innerText =
+            "Today's Schedule";
+
+        text.innerText =
+            "Today";
+
+    } else {
+
+        title.innerText =
+            "Selected Schedule";
+
+        text.innerText =
+            selectedDashboardDate;
+    }
+}
+
+
+function changeDashboardDate(direction) {
+
+    const parts =
+        selectedDashboardDate.split("-");
+
+    const date =
+        new Date(
+            Number(parts[0]),
+            Number(parts[1]) - 1,
+            Number(parts[2])
+        );
+
+    date.setDate(
+        date.getDate() + direction
+    );
+
+    selectedDashboardDate =
+        formatDateForAPI(
+            date
+        );
+
+    refreshDashboardScheduleForSelectedDate();
+}
+
+
+function goToTodayDashboard() {
+
+    selectedDashboardDate =
+        getTodayDateString();
+
+    refreshDashboardScheduleForSelectedDate();
+
+    setTimeout(() => {
+
+        scrollToCurrentTime();
+
+    }, 100);
+}
+
+
+/* ===================================
    DEADLINE CALENDAR
+   Used inside Create Study Plan modal
 =================================== */
 
 let deadlineCalendar;
 let calendarOpen = false;
+
 
 function toggleDeadlineCalendar() {
 
@@ -75,10 +226,18 @@ function initializeDeadlineCalendar() {
                     ).value =
                         info.dateStr;
 
-                    const formatted =
+                    const parts =
+                        info.dateStr.split("-");
+
+                    const date =
                         new Date(
-                            info.dateStr
-                        ).toLocaleDateString(
+                            Number(parts[0]),
+                            Number(parts[1]) - 1,
+                            Number(parts[2])
+                        );
+
+                    const formatted =
+                        date.toLocaleDateString(
                             "en-GB",
                             {
                                 day:
@@ -498,102 +657,16 @@ async function loadTasks() {
         const tasks =
             await response.json();
 
-        const tracker =
-            document.getElementById(
-                "taskTracker"
-            );
+        allTasksCache =
+            tasks;
 
-        const allTasks =
-            document.getElementById(
-                "allTasksContainer"
-            );
+        refreshDashboardScheduleForSelectedDate();
 
-        let html =
-            "";
+        renderAllTasksPage(
+            tasks
+        );
 
-        const slotCurrentHours = {
-            Morning: 9,
-            Afternoon: 13,
-            Evening: 18
-        };
-
-        tasks.forEach((task) => {
-
-            const duration =
-                Number(
-                    task.hours
-                );
-
-            const slot =
-                task.preferred_slot;
-
-            if (
-                slotCurrentHours[slot] === undefined
-            ) {
-
-                slotCurrentHours[slot] =
-                    getSlotStartHour(
-                        slot
-                    );
-            }
-
-            const startHour =
-                slotCurrentHours[slot];
-
-            const endHour =
-                startHour + duration;
-
-            const timeRange =
-                `${formatHour(startHour)} - ${formatHour(endHour)}`;
-
-            html += `
-
-                <div class="task-card">
-
-                    <div class="task-left">
-
-                        <input
-                            type="checkbox"
-                            ${task.status === "completed"
-                                ? "checked"
-                                : ""}
-                            onchange="updateTask(${task.id})">
-
-                        <span>
-
-                            ${task.subject}
-
-                        </span>
-
-                    </div>
-
-                    <div class="task-time">
-
-                        ${timeRange}
-
-                    </div>
-
-                </div>
-
-            `;
-
-            slotCurrentHours[slot] =
-                endHour;
-        });
-
-        if (tracker) {
-
-            tracker.innerHTML =
-                html;
-        }
-
-        if (allTasks) {
-
-            allTasks.innerHTML =
-                html;
-        }
-
-        renderSchedule(
+        updateCalendarEvents(
             tasks
         );
 
@@ -604,6 +677,300 @@ async function loadTasks() {
             error
         );
     }
+}
+
+
+function renderTaskList(tasks) {
+
+    const tracker =
+        document.getElementById(
+            "taskTracker"
+        );
+
+    let html =
+        "";
+
+    const slotCurrentHours = {
+        Morning: 9,
+        Afternoon: 13,
+        Evening: 18
+    };
+
+    tasks.forEach((task) => {
+
+        const duration =
+            Number(
+                task.hours
+            );
+
+        const slot =
+            task.preferred_slot;
+
+        if (
+            slotCurrentHours[slot] === undefined
+        ) {
+
+            slotCurrentHours[slot] =
+                getSlotStartHour(
+                    slot
+                );
+        }
+
+        const startHour =
+            slotCurrentHours[slot];
+
+        const endHour =
+            startHour + duration;
+
+        const timeRange =
+            `${formatHour(startHour)} - ${formatHour(endHour)}`;
+
+        html += buildTaskCardHTML(
+            task,
+            timeRange
+        );
+
+        slotCurrentHours[slot] =
+            endHour;
+    });
+
+    if (html === "") {
+
+        html = `
+            <p class="empty-message">
+                No study sessions for this date.
+            </p>
+        `;
+    }
+
+    if (tracker) {
+
+        tracker.innerHTML =
+            html;
+    }
+}
+
+
+function buildTaskCardHTML(
+    task,
+    timeRange
+) {
+
+    return `
+
+        <div class="task-card">
+
+            <div class="task-left">
+
+                <input
+                    type="checkbox"
+                    ${task.status === "completed"
+                        ? "checked"
+                        : ""}
+                    onchange="updateTask(${task.id})">
+
+                <span>
+
+                    ${task.subject}
+
+                </span>
+
+            </div>
+
+            <div class="task-time">
+
+                ${timeRange}
+
+                <br>
+
+                <small>
+                    ${task.deadline}
+                    •
+                    ${task.preferred_slot}
+                    •
+                    ${task.status}
+                </small>
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+
+function setTaskPageMode(mode) {
+
+    taskPageMode =
+        mode;
+
+    const dateBtn =
+        document.getElementById(
+            "taskDateModeBtn"
+        );
+
+    const labelBtn =
+        document.getElementById(
+            "taskLabelModeBtn"
+        );
+
+    if (dateBtn && labelBtn) {
+
+        dateBtn.classList.toggle(
+            "active",
+            mode === "date"
+        );
+
+        labelBtn.classList.toggle(
+            "active",
+            mode === "label"
+        );
+    }
+
+    renderAllTasksPage(
+        allTasksCache
+    );
+}
+
+
+function renderAllTasksPage(tasks) {
+
+    const allTasks =
+        document.getElementById(
+            "allTasksContainer"
+        );
+
+    if (!allTasks) {
+        return;
+    }
+
+    if (!tasks || tasks.length === 0) {
+
+        allTasks.innerHTML =
+            `
+            <p class="empty-message">
+                No tasks created yet.
+            </p>
+            `;
+
+        return;
+    }
+
+    if (taskPageMode === "date") {
+
+        renderTasksGroupedByDate(
+            tasks,
+            allTasks
+        );
+
+    } else {
+
+        renderTasksGroupedByLabel(
+            tasks,
+            allTasks
+        );
+    }
+}
+
+
+function renderTasksGroupedByDate(
+    tasks,
+    container
+) {
+
+    const grouped = {};
+
+    tasks.forEach(task => {
+
+        if (!grouped[task.deadline]) {
+
+            grouped[task.deadline] =
+                [];
+        }
+
+        grouped[task.deadline].push(
+            task
+        );
+    });
+
+    let html =
+        "";
+
+    Object.keys(grouped)
+        .sort()
+        .forEach(date => {
+
+            html += `
+                <div class="task-group">
+                    <h3>
+                        ${date}
+                    </h3>
+                </div>
+            `;
+
+            grouped[date].forEach(task => {
+
+                html += buildTaskCardHTML(
+                    task,
+                    `${task.hours} hour(s)`
+                );
+            });
+        });
+
+    container.innerHTML =
+        html;
+}
+
+
+function renderTasksGroupedByLabel(
+    tasks,
+    container
+) {
+
+    const grouped = {};
+
+    tasks.forEach(task => {
+
+        const label =
+            task.subject;
+
+        if (!grouped[label]) {
+
+            grouped[label] =
+                [];
+        }
+
+        grouped[label].push(
+            task
+        );
+    });
+
+    let html =
+        "";
+
+    Object.keys(grouped)
+        .sort()
+        .forEach(label => {
+
+            html += `
+                <div class="task-group">
+                    <h3>
+                        ${label}
+                    </h3>
+                </div>
+            `;
+
+            grouped[label].forEach(task => {
+
+                html += buildTaskCardHTML(
+                    task,
+                    `${task.hours} hour(s)`
+                );
+            });
+        });
+
+    container.innerHTML =
+        html;
 }
 
 
@@ -896,9 +1263,11 @@ async function sendMessage() {
 
 /* ===================================
    CALENDAR
+   Main schedule calendar
 =================================== */
 
 let calendar;
+
 
 function initializeCalendar() {
 
@@ -922,17 +1291,52 @@ function initializeCalendar() {
                 height:
                     700,
 
+                headerToolbar: {
+                    left:
+                        "prev,next today",
+                    center:
+                        "title",
+                    right:
+                        ""
+                },
+
                 dateClick(info) {
 
-                    openModal();
-
-                    document.getElementById(
-                        "examDate"
-                    ).value =
+                    selectedDashboardDate =
                         info.dateStr;
+
+                    refreshDashboardScheduleForSelectedDate();
+
+                    showToast(
+                        "Showing schedule for " + info.dateStr
+                    );
                 }
             }
         );
+
+    calendar.render();
+}
+
+
+function updateCalendarEvents(tasks) {
+
+    if (!calendar) {
+        return;
+    }
+
+    calendar.removeAllEvents();
+
+    tasks.forEach(task => {
+
+        calendar.addEvent({
+            title:
+                `${task.subject} (${task.hours}h)`,
+            start:
+                task.deadline,
+            allDay:
+                true
+        });
+    });
 }
 
 
@@ -941,6 +1345,7 @@ function initializeCalendar() {
 =================================== */
 
 let energyChart;
+
 
 function initializeChart(
     tasks = []
@@ -1000,7 +1405,7 @@ function initializeChart(
 
                     datasets: [{
                         label:
-                            "Today's Study Hours",
+                            "Selected Day Study Hours",
                         data:
                             values,
                         tension:
@@ -1054,6 +1459,9 @@ function renderSchedule(tasks) {
 
     const hourHeight =
         64;
+
+    const isToday =
+        selectedDashboardDate === getTodayDateString();
 
     const now =
         new Date();
@@ -1174,6 +1582,34 @@ function renderSchedule(tasks) {
             endHour;
     });
 
+    if (taskHtml === "") {
+
+        taskHtml = `
+
+            <div
+                class="schedule-task-card"
+                style="
+                    top: ${9 * hourHeight}px;
+                    height: ${hourHeight}px;
+                ">
+
+                <div class="schedule-task-title">
+
+                    No study sessions
+
+                </div>
+
+                <div class="schedule-task-meta">
+
+                    Select another date from the calendar
+
+                </div>
+
+            </div>
+
+        `;
+    }
+
     container.innerHTML =
         `
 
@@ -1183,10 +1619,14 @@ function renderSchedule(tasks) {
 
             ${rowsHtml}
 
-            <div
-                class="current-time-line"
-                style="top: ${currentTimeTop}px;">
-            </div>
+            ${isToday
+                ? `
+                    <div
+                        class="current-time-line"
+                        style="top: ${currentTimeTop}px;">
+                    </div>
+                `
+                : ""}
 
             ${taskHtml}
 
@@ -1195,6 +1635,18 @@ function renderSchedule(tasks) {
     `;
 
     requestAnimationFrame(() => {
+
+        if (!isToday) {
+
+            container.scrollTo({
+                top:
+                    8 * hourHeight,
+                behavior:
+                    "smooth"
+            });
+
+            return;
+        }
 
         const currentLine =
             container.querySelector(
