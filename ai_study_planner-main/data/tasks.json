@@ -1,0 +1,72 @@
+[
+    {
+        "id": 1,
+        "day": 1,
+        "subject": "Math",
+        "hours": 2,
+        "difficulty": "Easy",
+        "preferred_slot": "Morning",
+        "status": "completed",
+        "deadline": "2026-07-29"
+    },
+    {
+        "id": 2,
+        "day": 1,
+        "subject": "Psychology",
+        "hours": 2,
+        "difficulty": "Easy",
+        "preferred_slot": "Evening",
+        "status": "completed",
+        "deadline": "2026-07-31"
+    },
+    {
+        "id": 3,
+        "day": 2,
+        "subject": "Psychology",
+        "hours": 1,
+        "difficulty": "Easy",
+        "preferred_slot": "Evening",
+        "status": "completed",
+        "deadline": "2026-07-31"
+    },
+    {
+        "id": 4,
+        "day": 1,
+        "subject": "Psychology",
+        "hours": 2,
+        "difficulty": "Easy",
+        "preferred_slot": "Afternoon",
+        "status": "completed",
+        "deadline": "2026-08-20"
+    },
+    {
+        "id": 5,
+        "day": 2,
+        "subject": "Psychology",
+        "hours": 1,
+        "difficulty": "Easy",
+        "preferred_slot": "Afternoon",
+        "status": "pending",
+        "deadline": "2026-08-20"
+    },
+    {
+        "id": 6,
+        "day": 1,
+        "subject": "Math",
+        "hours": 2,
+        "difficulty": "Easy",
+        "preferred_slot": "Morning",
+        "status": "pending",
+        "deadline": "2026-08-17"
+    },
+    {
+        "id": 7,
+        "day": 2,
+        "subject": "Math",
+        "hours": 1,
+        "difficulty": "Easy",
+        "preferred_slot": "Morning",
+        "status": "pending",
+        "deadline": "2026-08-17"
+    }
+]

@@ -3,14 +3,24 @@ from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_ollama import ChatOllama
 
-from backend.storage import study_goals, tasks
+# from backend.storage import study_goals, tasks
 
+from backend.storage import (
+    load_study_goals,
+    load_tasks
+)
+
+# load data
+study_goals = load_study_goals()
+
+tasks = load_tasks()
 
 # =====================================
 # LLM
 # =====================================
 
 llm = ChatOllama(
+    # model="llama3.2:latest",
     model="llama3.2:3b",
     temperature=0,
 )
@@ -224,7 +234,7 @@ Write naturally like an experienced study mentor.
 FORMATTING RULES
 ====================================================
 
-Always respond in Markdown.
+*** Always respond in Markdown. ****
 
 Formatting rules:
 
@@ -238,15 +248,15 @@ Formatting rules:
 DEFAULT RESPONSE FORMAT
 ====================================================
 
-## Recommendation
+Recommendation (keep it in bold)
 
 <One or two concise sentences>
 
-## Why
+Why (keep it in bold)
 
 <Explain using only the study context>
 
-## Next Step
+Next Step (keep it in bold)
 
 - Step 1
 - Step 2
@@ -258,13 +268,13 @@ IF USER ASKS FOR A STUDY SCHEDULE
 
 Return:
 
-## Study Schedule
+Study Schedule (keep it in bold)
 
 | Date | Time | Subject | Duration |
 |------|------|---------|----------|
 | Use deadline from context | Use preferred slot from context | Use subject from context | Use task duration |
 
-## Notes
+Notes (keep it in bold)
 
 - Use only tasks from the study context.
 - Do not invent exact times if the context only gives Morning, Afternoon, or Evening.
@@ -275,7 +285,7 @@ IF USER ASKS FOR REVISION PLAN
 
 Return:
 
-## Revision Plan
+** Revision Plan
 
 Day 1
 - ...
@@ -283,7 +293,7 @@ Day 1
 Day 2
 - ...
 
-## Focus Areas
+** Focus Areas
 
 - ...
 
@@ -293,7 +303,7 @@ IF INFORMATION IS INSUFFICIENT
 
 Respond exactly like this:
 
-## I need one more detail
+** I need one more detail
 
 <Ask one short question>
 

@@ -1159,6 +1159,26 @@ async function sendMessage() {
         return;
     }
 
+    // messages.innerHTML += `
+
+    //     <div class="message-row user-row">
+
+    //         <div class="message-label">
+
+    //             User
+
+    //         </div>
+
+    //         <div class="user-message">
+
+    //             ${message}
+
+    //         </div>
+
+    //     </div>
+
+    // `;
+
     messages.innerHTML += `
 
         <div class="message-row user-row">
@@ -1171,13 +1191,13 @@ async function sendMessage() {
 
             <div class="user-message">
 
-                ${message}
+                ${formatMarkdownText(message)}
 
             </div>
 
         </div>
 
-    `;
+    `;    
 
     const aiMessageId =
         "ai-" + Date.now();
@@ -1236,16 +1256,26 @@ async function sendMessage() {
                 }
             );
 
+        // const data =
+        //     await response.json();
+
+        // document.getElementById(
+        //     aiMessageId
+        // ).innerHTML =
+        //     data.response;
+
+        // messages.scrollTop =
+        //     messages.scrollHeight;
         const data =
             await response.json();
 
         document.getElementById(
             aiMessageId
         ).innerHTML =
-            data.response;
+            formatMarkdownText(data.response);
 
         messages.scrollTop =
-            messages.scrollHeight;
+            messages.scrollHeight;        
 
     } catch (error) {
 
@@ -1440,6 +1470,21 @@ function initializeChart(
         );
 }
 
+/* ===================================
+   MARKDOWN PARSER HELPER
+=================================== */
+
+function formatMarkdownText(text) {
+    if (!text) return "";
+
+    return text
+        // Replace bold **text** with <strong>text</strong>
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        // Replace italic *text* or _text_ with <em>text</em>
+        .replace(/\*(.*?)\*/g, "<em>$1</em>")
+        // Replace newlines with <br> tags
+        .replace(/\n/g, "<br>");
+}
 
 /* ===================================
    SCHEDULE VIEW

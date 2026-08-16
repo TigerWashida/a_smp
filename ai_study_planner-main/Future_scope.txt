@@ -1,0 +1,11 @@
+UI:
+1. Design enhancements for create plan
+2. Chart - Try other graphs, or represent something else
+3. User Authentication design
+4. Update logo
+
+Backend:
+1. User Authentication System
+2. Change model from Ollama to OpenAI
+3. Move from .json database to SQL database
+4. Schedule enhancement - Create sessions on the day that are not on the deadline

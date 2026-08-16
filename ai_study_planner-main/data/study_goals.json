@@ -1,0 +1,30 @@
+[
+    {
+        "subject": "Math",
+        "total_hours": 2,
+        "difficulty": "Easy",
+        "preferred_slot": "Morning",
+        "deadline": "2026-07-29"
+    },
+    {
+        "subject": "Psychology",
+        "total_hours": 3,
+        "difficulty": "Easy",
+        "preferred_slot": "Evening",
+        "deadline": "2026-07-31"
+    },
+    {
+        "subject": "Psychology",
+        "total_hours": 3,
+        "difficulty": "Easy",
+        "preferred_slot": "Afternoon",
+        "deadline": "2026-08-20"
+    },
+    {
+        "subject": "Math",
+        "total_hours": 3,
+        "difficulty": "Easy",
+        "preferred_slot": "Morning",
+        "deadline": "2026-08-17"
+    }
+]
