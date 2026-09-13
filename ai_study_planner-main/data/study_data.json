@@ -1,0 +1,70 @@
+{
+  "study_goals": [
+    {
+      "deadline": "2026-09-15",
+      "difficulty": "Medium",
+      "id": 1,
+      "preferred_slot": "Afternoon",
+      "subject": "Mathematics",
+      "total_hours": 4.0
+    },
+    {
+      "deadline": "2026-09-06",
+      "difficulty": "Hard",
+      "id": 2,
+      "preferred_slot": "Afternoon",
+      "subject": "Delta AI White paper",
+      "total_hours": 4.0
+    }
+  ],
+  "tasks": [
+    {
+      "date": "2026-09-05",
+      "deadline": "2026-09-15",
+      "difficulty": "Medium",
+      "end_time": "15:00",
+      "hours": 2.0,
+      "id": 1,
+      "preferred_slot": "Afternoon",
+      "start_time": "13:00",
+      "status": "completed",
+      "subject": "Mathematics"
+    },
+    {
+      "date": "2026-09-06",
+      "deadline": "2026-09-15",
+      "difficulty": "Medium",
+      "end_time": "12:00",
+      "hours": 2.0,
+      "id": 2,
+      "preferred_slot": "Afternoon",
+      "start_time": "10:00",
+      "status": "completed",
+      "subject": "Mathematics"
+    },
+    {
+      "date": "2026-09-06",
+      "deadline": "2026-09-06",
+      "difficulty": "Hard",
+      "end_time": "15:00",
+      "hours": 2.0,
+      "id": 3,
+      "preferred_slot": "Afternoon",
+      "start_time": "13:00",
+      "status": "pending",
+      "subject": "Delta AI White paper"
+    },
+    {
+      "date": "2026-09-06",
+      "deadline": "2026-09-06",
+      "difficulty": "Hard",
+      "end_time": "19:00",
+      "hours": 2.0,
+      "id": 4,
+      "preferred_slot": "Afternoon",
+      "start_time": "17:00",
+      "status": "pending",
+      "subject": "Delta AI White paper"
+    }
+  ]
+}

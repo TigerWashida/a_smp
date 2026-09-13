@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StudyMate Implementation Changes</title>
+<style>
+:root{--wine:#7d1830;--dark:#271a1e;--muted:#73656a;--paper:#fbf8f4;--line:#e7ddd8;--green:#267253;--amber:#8a611f;font-family:Inter,system-ui,sans-serif;color:var(--dark);background:var(--paper)}*{box-sizing:border-box}body{margin:0;line-height:1.55;background:linear-gradient(145deg,#fff 0,#fbf8f4 48%,#f5e6e9 100%)}a{color:var(--wine)}header,main,footer{width:min(1120px,calc(100% - 36px));margin:auto}header{display:flex;justify-content:space-between;align-items:center;padding:24px 0}.brand{font:700 1.25rem Georgia,serif;text-decoration:none;color:var(--dark)}nav{display:flex;gap:16px;font-size:.9rem}.hero{padding:60px 0 44px}.kicker{color:var(--wine);font-size:.75rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase}.hero h1{max-width:900px;margin:8px 0 16px;font:700 clamp(2.5rem,6vw,5.2rem)/1 Georgia,serif;letter-spacing:-.04em}.hero p{max-width:760px;color:var(--muted);font-size:1.1rem}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:54px}.summary article{padding:20px;border:1px solid var(--line);border-radius:18px;background:#fff}.summary strong{display:block;font:700 2rem Georgia,serif;color:var(--wine)}.summary span{color:var(--muted);font-size:.82rem}section{margin-bottom:54px}h2{font:700 2rem Georgia,serif}.change{display:grid;grid-template-columns:180px 1fr 1fr;border-top:1px solid var(--line);padding:20px 0;gap:20px}.change h3{margin:0;color:var(--wine)}.before,.after{padding:16px;border-radius:14px}.before{background:#f3efec;color:var(--muted)}.after{background:#e9f5ef;color:#245c45}.label{display:block;text-transform:uppercase;letter-spacing:.12em;font-weight:850;font-size:.67rem;margin-bottom:5px}table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f4eeee;color:var(--wine);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em}code{font-size:.82rem}.checks{display:grid;grid-template-columns:1fr 1fr;gap:14px}.check{padding:18px;border:1px solid var(--line);border-radius:16px;background:#fff}.check strong{color:var(--green)}.scope{padding:22px;background:#fff5de;border-left:5px solid var(--amber);border-radius:0 16px 16px 0}.links{display:flex;gap:12px}.links a{display:inline-block;padding:10px 16px;border-radius:999px;background:var(--wine);color:#fff;text-decoration:none;font-weight:800}footer{padding:0 0 36px;color:var(--muted);font-size:.85rem}@media(max-width:760px){nav{display:none}.summary,.checks{grid-template-columns:1fr}.change{grid-template-columns:1fr}.hero{padding-top:40px}table{display:block;overflow:auto}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">StudyMate</a><nav><a href="/">Open app</a><a href="application-overview.html">Application overview</a></nav></header>
+<main>
+<section class="hero"><p class="kicker">Implementation report</p><h1>From a generated list to an accepted, persistent calendar plan.</h1><p>The submission build replaces placeholder scheduling and immediate saving with a validated recommendation workflow, reliable storage, draggable time controls, and explicit AI fallback behavior.</p></section>
+<section class="summary">
+<article><strong>30 min</strong><span>Calendar snap and preview lifetime</span></article>
+<article><strong>2 hours</strong><span>Maximum duration of one study session</span></article>
+<article><strong>12 sec</strong><span>Maximum wait before deterministic AI fallback</span></article>
+</section>
+<section><h2>Before and after</h2>
+<div class="change"><h3>Recommendation flow</h3><div class="before"><span class="label">Before</span>Generate and save tasks immediately.</div><div class="after"><span class="label">After</span>Create a temporary preview, explain it, let the student move sessions, then accept the complete plan.</div></div>
+<div class="change"><h3>Scheduling</h3><div class="before"><span class="label">Before</span>Abstract day counters and fixed front-end start times.</div><div class="after"><span class="label">After</span>Real dates and HH:MM times, 30-minute search, preferred windows, two-hour caps, saved-task conflict avoidance, and deadline capacity checks.</div></div>
+<div class="change"><h3>Storage</h3><div class="before"><span class="label">Before</span>In-memory lists disappear on restart.</div><div class="after"><span class="label">After</span>Goals and tasks persist in JSON using temporary-file replacement and max-ID-plus-one allocation.</div></div>
+<div class="change"><h3>Calendar editing</h3><div class="before"><span class="label">Before</span>Month view without scheduled events or dragging.</div><div class="after"><span class="label">After</span>Month, week, and day views; the 24-hour weekly grid adds pre-accept and post-accept dragging, fixed duration, server validation, and automatic revert on failure.</div></div>
+<div class="change"><h3>AI behavior</h3><div class="before"><span class="label">Before</span>Context frozen at import and unhandled local-model failure.</div><div class="after"><span class="label">After</span>Context is rebuilt per request; Ollama output is time-limited and every fallback is labelled with a reason.</div></div>
+<div class="change"><h3>Frontend safety</h3><div class="before"><span class="label">Before</span>Dynamic user and AI text inserted through HTML strings.</div><div class="after"><span class="label">After</span>Dynamic content uses text nodes and DOM construction; every request handles HTTP, JSON, and network errors.</div></div>
+</section>
+<section><h2>API surface</h2><table><thead><tr><th>Method</th><th>Endpoint</th><th>Responsibility</th></tr></thead><tbody>
+<tr><td>POST</td><td><code>/plan-previews</code></td><td>Schedule without persistence; return sessions, explanation, mode, warning, and expiry.</td></tr>
+<tr><td>POST</td><td><code>/plan-previews/{id}/accept</code></td><td>Revalidate every adjusted session and atomically save the goal and tasks once.</td></tr>
+<tr><td>PATCH</td><td><code>/tasks/{id}/schedule</code></td><td>Move a saved task while preserving duration and enforcing conflicts and deadlines.</td></tr>
+<tr><td>PATCH</td><td><code>/tasks/{id}</code></td><td>Keep the existing pending/completed status capability.</td></tr>
+<tr><td>POST</td><td><code>/chat</code></td><td>Answer from current goals, tasks, and optional preview; expose AI or fallback mode.</td></tr>
+<tr><td>POST</td><td><code>/generate-plan</code></td><td>Deprecated compatibility route for older clients.</td></tr>
+</tbody></table></section>
+<section><h2>Validation and tests</h2><div class="checks">
+<div class="check"><strong>Scheduler</strong><p>Preferred-window placement, maximum duration, overlap avoidance, capacity failure, date handling, and 30-minute boundaries.</p></div>
+<div class="check"><strong>Persistence</strong><p>Preview non-persistence, atomic acceptance, reload survival, sequential IDs, double-accept rejection, and corrupt JSON failure.</p></div>
+<div class="check"><strong>Moves</strong><p>Fixed duration, past time, deadline, saved-task overlap, missing task, and browser revert behavior.</p></div>
+<div class="check"><strong>AI and UI</strong><p>Dynamic context, local-model success mode, timeout/failure fallback, safe text rendering, and end-to-end browser smoke flow.</p></div>
+</div></section>
+<section class="scope"><strong>Deferred intentionally:</strong> external-calendar import, timezone conversion, advanced optimization, branding work, and a large visual redesign. These would increase submission risk without strengthening the core demonstration.</section>
+<section><h2>Product explanation</h2><div class="links"><a href="application-overview.html">Read application overview</a><a href="/">Open StudyMate</a></div></section>
+</main>
+<footer>StudyMate submission-ready implementation · 4 September 2026</footer>
+</body>
+</html>

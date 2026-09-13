@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StudyMate Application Overview</title>
+<style>
+:root{--wine:#7d1830;--dark:#271a1e;--muted:#73656a;--paper:#fbf8f4;--line:#e7ddd8;--rose:#f6e7e9;font-family:Inter,system-ui,sans-serif;color:var(--dark);background:var(--paper)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 90% 0,#f4dfe3,transparent 28rem),var(--paper);line-height:1.6}a{color:var(--wine)}
+header,main,footer{width:min(1080px,calc(100% - 36px));margin:auto}header{display:flex;justify-content:space-between;align-items:center;padding:24px 0}.brand{font:700 1.25rem Georgia,serif;text-decoration:none;color:var(--dark)}nav{display:flex;gap:16px;font-size:.9rem}
+.hero{padding:72px 0 56px}.kicker{color:var(--wine);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.75rem}.hero h1{max-width:850px;margin:8px 0 18px;font:700 clamp(2.7rem,7vw,5.8rem)/.98 Georgia,serif;letter-spacing:-.045em}.hero>p{max-width:720px;color:var(--muted);font-size:1.15rem}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:28px 0 54px}.flow article,.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 16px 45px rgba(62,27,35,.07)}.number{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--wine);color:#fff;font-weight:800}.flow h3{margin:18px 0 5px;font:700 1.15rem Georgia,serif}.flow p{margin:0;color:var(--muted);font-size:.9rem}
+section{margin:0 0 56px}h2{font:700 2rem Georgia,serif;margin:0 0 18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card h3{margin-top:0;color:var(--wine)}.card p,.card li{color:var(--muted)}.architecture{padding:28px;border-radius:24px;background:var(--dark);color:#fff}.architecture ol{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0;list-style:none}.architecture li{padding:16px;border:1px solid #59454b;border-radius:14px}.architecture strong{display:block;color:#efc0c9}.note{padding:22px;border-left:5px solid var(--wine);background:var(--rose);border-radius:0 16px 16px 0}.cta{display:flex;justify-content:space-between;align-items:center;gap:20px;background:var(--wine);color:#fff;padding:28px;border-radius:24px}.cta a{background:#fff;color:var(--wine);padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:800}footer{padding:0 0 36px;color:var(--muted);font-size:.85rem}
+@media(max-width:760px){nav{display:none}.flow,.grid,.architecture ol{grid-template-columns:1fr}.hero{padding-top:42px}.cta{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">StudyMate</a><nav><a href="/">Open app</a><a href="implementation-changes.html">Implementation changes</a></nav></header>
+<main>
+<section class="hero"><p class="kicker">Application overview</p><h1>Study planning with a human decision at the center.</h1><p>StudyMate turns one learning goal into practical calendar sessions. AI recommends; the student reviews, moves, and accepts. That separation keeps the system useful without letting automation make the final commitment.</p></section>
+<section><h2>The four-step experience</h2><div class="flow">
+<article><span class="number">1</span><h3>Describe the goal</h3><p>Enter subject, total hours, difficulty, preferred time of day, and deadline.</p></article>
+<article><span class="number">2</span><h3>Get a recommendation</h3><p>StudyMate searches available 30-minute openings and caps each session at two hours.</p></article>
+<article><span class="number">3</span><h3>Adjust the schedule</h3><p>Use the monthly overview, then drag the temporary weekly-calendar preview in 30-minute steps.</p></article>
+<article><span class="number">4</span><h3>Accept the plan</h3><p>The server validates the whole plan again, then saves every session atomically.</p></article>
+</div></section>
+<section><h2>What the application protects</h2><div class="grid">
+<article class="card"><h3>Realistic time</h3><p>Morning, afternoon, and evening preferences map to defined study windows. Saved tasks are treated as occupied time, and recommendations stop at the deadline.</p></article>
+<article class="card"><h3>Student control</h3><p>Preview creation never writes a goal or task. Only the explicit <strong>Accept Plan</strong> action makes the schedule permanent.</p></article>
+<article class="card"><h3>Reliable changes</h3><p>Moves are rejected when they overlap another task, enter the past, exceed the deadline, or alter the original duration. The calendar returns to its previous position and explains why.</p></article>
+<article class="card"><h3>Graceful AI failure</h3><p>Ollama supplies personalized explanations and chat. If it fails or takes more than 12 seconds, StudyMate shows a clearly labelled, deterministic answer based on current schedule data.</p></article>
+</div></section>
+<section class="architecture"><h2>How the pieces connect</h2><ol>
+<li><strong>Browser UI</strong>Safe form, weekly calendar, preview controls, tasks, and chat.</li>
+<li><strong>FastAPI</strong>Validation, preview lifecycle, acceptance, status, and scheduling endpoints.</li>
+<li><strong>Scheduler + AI</strong>First-fit calendar logic plus local Ollama explanations with fallback.</li>
+<li><strong>JSON storage</strong>Atomic persistence to a local data file with stable incremental IDs.</li>
+</ol></section>
+<section><h2>A submission-ready demo</h2><div class="grid">
+<article class="card"><h3>Core story</h3><ol><li>Create a goal due next week.</li><li>Show the recommended sessions.</li><li>Drag one by 30 minutes.</li><li>Accept and reload.</li><li>Move a saved session.</li></ol></article>
+<article class="card"><h3>Reliability story</h3><ol><li>Attempt an overlapping move.</li><li>Show the automatic revert and reason.</li><li>Stop Ollama.</li><li>Create another preview.</li><li>Show the visible Fallback label.</li></ol></article>
+</div></section>
+<section class="note"><strong>Deliberate scope:</strong> this version does not import external calendars, convert time zones, or perform advanced optimization. It focuses on a complete, testable recommendation–adjustment–acceptance loop.</section>
+<section class="cta"><div><p class="kicker" style="color:#f4c5ce">Technical companion</p><h2 style="margin:4px 0">See exactly what changed.</h2></div><a href="implementation-changes.html">View change report</a></section>
+</main>
+<footer>StudyMate · Delta AI project · Local-first demonstration build</footer>
+</body>
+</html>

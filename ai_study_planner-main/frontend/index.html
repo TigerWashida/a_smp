@@ -1,614 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>
-        AI Study Management Platform
-    </title>
-
-    <!-- Full Calendar -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
-
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js">
-    </script>
-
-    <!-- Chart JS -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js">
-    </script>
-
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="StudyMate recommends, adjusts, and saves realistic study plans.">
+  <title>StudyMate | AI Study Management Platform</title>
+  <style>
+    .file-open-notice{box-sizing:border-box;display:grid;min-height:100vh;place-items:center;margin:0;padding:24px;background:radial-gradient(circle at 15% 0,#233d73 0,transparent 38%),#10182b;color:#edf3ff;font:16px/1.55 Inter,ui-sans-serif,system-ui,sans-serif}.file-open-card{width:min(620px,100%);padding:36px;border:1px solid #344f88;border-radius:18px;background:#16223d;box-shadow:0 24px 60px #02071380}.file-open-card h1{margin:0 0 10px;font-size:30px}.file-open-card p{color:#c2cee4}.file-open-card code{display:block;overflow:auto;margin:18px 0;padding:13px;border-radius:10px;background:#0c1426;color:#a9c7ff}.file-open-card strong{color:#fff}
+  </style>
+  <script>
+    if (location.protocol === "file:") {
+      window.__studyMateOpenedDirectly = true;
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.className = "file-open-notice";
+        document.body.replaceChildren(Object.assign(document.createElement("main"), {className: "file-open-card", innerHTML: "<p>StudyMate</p><h1>Open the app through its local server</h1><p>You opened <strong>index.html</strong> directly, so its design files, calendar, and planner API cannot run. Nothing is wrong with your data.</p><p>Double-click <strong>Start StudyMate.command</strong> in the project folder, then open:</p><code>http://127.0.0.1:8000</code><p>If you prefer Terminal:</p><code>cd /Users/taigawashida/Documents/a_smp/ai_study_planner-main<br>source .venv/bin/activate<br>uvicorn main:app</code>"}));
+      });
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js" defer></script>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
 </head>
+<body class="dark-theme">
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div class="app-container">
+    <aside class="sidebar">
+      <a class="logo-container" href="/" aria-label="StudyMate home">
+        <span class="logo">📚</span>
+        <span><strong>StudyMate</strong><small>AI Study Planner</small></span>
+      </a>
+      <nav aria-label="Main navigation">
+        <button class="nav-item active" data-page="dashboard-page"><span>📊</span><span>Dashboard</span></button>
+        <button class="nav-item" data-page="calendar-page"><span>📅</span><span>Calendar</span></button>
+        <button class="nav-item" data-page="tasks-page"><span>✅</span><span>Tasks</span></button>
+        <button class="nav-item" data-page="settings-page"><span>⚙️</span><span>Settings</span></button>
+        <button class="nav-item" data-page="account-page"><span>👤</span><span>Account</span></button>
+      </nav>
+      <div class="sidebar-footer">
+        <p>AI recommends.<br>You decide.</p>
+      </div>
+    </aside>
 
-<body>
+    <main class="main-content">
+      <section id="dashboard-page" class="page">
+        <div class="page-header">
+          <div><h1>Today's Schedule</h1><p>Study smarter. Learn faster.</p></div>
+          <button class="primary-btn open-planner">+ Create Study Plan</button>
+        </div>
 
-    <div id="toast" class="toast"></div>
+        <div class="stats-grid">
+          <article class="stat-card"><span>Active goals</span><strong id="goalCount">0</strong></article>
+          <article class="stat-card"><span>Pending sessions</span><strong id="pendingCount">0</strong></article>
+          <article class="stat-card"><span>Hours remaining</span><strong id="pendingHours">0</strong></article>
+          <article class="stat-card"><span>Completed</span><strong id="completedCount">0</strong></article>
+        </div>
 
-    <div class="app-container">
-
-        <!-- Sidebar -->
-
-        <aside class="sidebar">
-
-            <div class="logo-container">
-
-                <div class="logo-title-row">
-                    <div class="logo">
-                        <img src="education-logo.png" alt="AI Study Planner Logo">
-                    </div>
-
-                    <h2>AI Study Planner</h2>
-                </div>
-
-                <p class="logo-tagline">
-                    Study Smarter. Learn Faster.
-                </p>
-
+        <div class="dashboard-layout">
+          <section class="schedule-card">
+            <div class="schedule-header">
+              <div><p class="section-label">Today</p><h2>Your study timeline</h2></div>
+              <button class="now-btn" id="openCalendarPage">● Open week</button>
             </div>
-
-            <nav>
-
-                <ul>
-
-                    <li class="nav-item active"
-                        onclick="showPage('dashboard-page', this)">
-                        📊 Dashboard
-                    </li>
-
-                    <li class="nav-item"
-                        onclick="showPage('calendar-page', this)">
-                        📅 Calendar
-                    </li>
-
-                    <li class="nav-item"
-                        onclick="showPage('tasks-page', this)">
-                        ✅ Tasks
-                    </li>
-
-                    <li class="nav-item"
-                        onclick="showPage('settings-page', this)">
-                        ⚙️ Settings
-                    </li>
-
-                    <li class="nav-item"
-                        onclick="showPage('account-page', this)">
-                        👤 Account
-                    </li>
-
-                </ul>
-
-            </nav>
-
-        </aside>
-
-        <!-- Content -->
-
-        <main class="main-content">
-
-            <!-- DASHBOARD -->
-
-            <section id="dashboard-page" class="page">
-
-                <div class="page-header">
-
-                    <div>
-
-                        <!-- <h1>
-                            Today's Schedule
-                        </h1> -->
-
-                    </div>
-
-                    <button class="primary-btn"
-                            onclick="openModal()">
-                        + Create Study Plan
-                    </button>
-
-                </div>
-
-                <div class="dashboard-layout">
-
-                    <!-- LEFT SIDE: SCHEDULE -->
-
-                    <div class="schedule-card">
-
-                                <div class="schedule-header">
-
-                                        <div>
-
-                                            <h3 id="dashboardDateTitle">
-                                                Today's Schedule
-                                            </h3>
-
-                                            <p id="dashboardDateText" class="dashboard-date-text">
-                                                Today
-                                            </p>
-
-                                        </div>
-
-                                        <div class="dashboard-date-controls">
-
-                                            <button
-                                                class="date-nav-btn"
-                                                onclick="changeDashboardDate(-1)">
-                                                ←
-                                            </button>
-
-                                            <button
-                                                class="now-btn"
-                                                onclick="goToTodayDashboard()">
-                                                ● Now
-                                            </button>
-
-                                            <button
-                                                class="date-nav-btn"
-                                                onclick="changeDashboardDate(1)">
-                                                →
-                                            </button>
-
-                                        </div>
-
-                                    </div>
-
-                        <div id="scheduleContainer"></div>
-
-                    </div>
-
-                    <!-- RIGHT SIDE: GRAPH + TASKS + COMPLETION -->
-
-                    <div class="right-column">
-
-                        <div class="card energy-card compact-energy-card">
-
-                            <div class="card-header">
-
-                                <h3>
-                                    Energy Level & Subject Analysis
-                                </h3>
-
-                            </div>
-
-                            <canvas id="energyChart"></canvas>
-
-                        </div>
-
-                        <div class="card">
-
-                            <div class="card-header">
-
-                                <h3>
-                                    Today's Tasks
-                                </h3>
-
-                            </div>
-
-                            <div id="taskTracker"></div>
-
-                        </div>
-
-                        <div class="card">
-
-                            <div class="card-header">
-
-                                <h3>
-                                    Day Completion
-                                </h3>
-
-                            </div>
-
-                            <div class="completion-box">
-
-                                <div id="completionCircle">
-                                    0%
-                                </div>
-
-                                <div
-                                    id="completionRecommendation"
-                                    class="completion-recommendation">
-
-                                    Loading recommendation...
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <div id="todaySchedule" class="today-schedule"></div>
+          </section>
+
+          <div class="right-column">
+            <section class="card">
+              <div class="card-header"><p class="section-label">Next up</p><h2>Study sessions</h2></div>
+              <div id="dashboardTaskList" class="task-list"></div>
             </section>
-
-            <!-- CALENDAR -->
-
-            <section id="calendar-page" class="page hidden">
-
-                <div class="page-header">
-
-                    <h1>
-                        Calendar
-                    </h1>
-
-                    <button class="primary-btn" onclick="openModal()">
-                        + Create Study Plan
-                    </button>
-
-                </div>
-
-                <div class="card">
-
-                    <div id="calendar"></div>
-
-                </div>
-
+            <section class="card">
+              <div class="card-header"><p class="section-label">Progress</p><h2>Day completion</h2></div>
+              <div class="completion-box">
+                <div id="completionCircle">0%</div>
+                <p id="completionRecommendation">Complete a session to build momentum.</p>
+              </div>
             </section>
-
-            <!-- TASKS -->
-
-            <section id="tasks-page" class="page hidden">
-
-                <div class="page-header">
-
-                    <h1>
-                        Tasks
-                    </h1>
-
-                    <div class="task-view-toggle">
-
-                        <button
-                            id="taskDateModeBtn"
-                            class="task-mode-btn active"
-                            onclick="setTaskPageMode('date')">
-                            Date
-                        </button>
-
-                        <button
-                            id="taskLabelModeBtn"
-                            class="task-mode-btn"
-                            onclick="setTaskPageMode('label')">
-                            Label
-                        </button>
-
-                    </div>
-
-                </div>
-
-                <div class="card">
-
-                    <div id="allTasksContainer"></div>
-
-                </div>
-
+            <section class="card guidance-card">
+              <div class="card-header"><p class="section-label">New workflow</p><h2>Recommend, adjust, accept</h2></div>
+              <ol><li>Get an AI recommendation.</li><li>Drag sessions in 30-minute steps.</li><li>Accept the complete plan.</li></ol>
             </section>
+          </div>
+        </div>
+      </section>
 
-            <!-- SETTINGS -->
+      <section id="calendar-page" class="page hidden">
+        <div class="page-header">
+          <div><h1>Calendar</h1><p>Move sessions without changing their duration.</p></div>
+          <button class="primary-btn open-planner">+ Create Study Plan</button>
+        </div>
 
-            <section id="settings-page" class="page hidden">
+        <section id="previewPanel" class="preview-panel" hidden aria-live="polite">
+          <div>
+            <div class="preview-title-row">
+              <span class="preview-icon">✨</span>
+              <div><p class="section-label">Recommendation ready</p><h2>Review and adjust before accepting</h2></div>
+              <span id="recommendationMode" class="mode-badge">AI</span>
+            </div>
+            <p id="recommendationText"></p>
+            <p id="recommendationWarning" class="warning" hidden></p>
+          </div>
+          <div class="modal-actions">
+            <button class="secondary-btn" id="cancelPreview">Cancel</button>
+            <button class="primary-btn" id="acceptPlan">Accept Plan</button>
+          </div>
+        </section>
 
-                <div class="page-header">
+        <section class="card calendar-card">
+          <div class="card-header calendar-heading">
+            <div><p class="section-label">Weekly schedule</p><h2>Drag to adjust time</h2></div>
+            <span class="calendar-note">Month / week / day · 30-minute snap · duration locked</span>
+          </div>
+          <div id="calendar" aria-label="Weekly study calendar"></div>
+        </section>
+      </section>
 
-                    <h1>
-                        Settings
-                    </h1>
+      <section id="tasks-page" class="page hidden">
+        <div class="page-header">
+          <div><h1>Tasks</h1><p>Review and complete saved study sessions.</p></div>
+          <button class="primary-btn open-planner">+ Create Study Plan</button>
+        </div>
+        <section class="card"><div id="taskList" class="task-list full-task-list"></div></section>
+      </section>
 
-                </div>
+      <section id="settings-page" class="page hidden">
+        <div class="page-header"><div><h1>Settings</h1><p>Choose the appearance that helps you focus.</p></div></div>
+        <section class="card settings-card">
+          <h2>Appearance</h2>
+          <label class="theme-option"><input type="radio" name="theme" value="light">☀️ Light Theme</label>
+          <label class="theme-option"><input type="radio" name="theme" value="dark">🌙 Dark Theme</label>
+        </section>
+        <section class="card resource-card">
+          <h2>Project information</h2>
+          <a href="/application-overview.html">Application overview</a>
+          <a href="/implementation-changes.html">Implementation changes</a>
+        </section>
+      </section>
 
-                <div class="theme-option">
+      <section id="account-page" class="page hidden">
+        <div class="page-header"><div><h1>Account</h1><p>Your local StudyMate profile.</p></div></div>
+        <section class="card profile-card">
+          <span class="profile-avatar">👤</span>
+          <div><h2>Student</h2><p><strong id="accountGoalCount">0</strong> active goals · <strong id="accountTaskCount">0</strong> saved sessions</p></div>
+        </section>
+      </section>
+    </main>
+  </div>
 
-                    <input
-                        type="radio"
-                        id="lightTheme"
-                        name="theme"
-                        value="light"
-                        onchange="setTheme('light')">
+  <dialog id="plannerDialog">
+    <form id="plannerForm" method="dialog">
+      <div class="dialog-heading">
+        <div><p class="section-label">New goal</p><h2>📚 Get AI Recommendation</h2></div>
+        <button class="icon-button" id="closePlanner" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="modal-grid">
+        <label>Subject<input id="subject" maxlength="120" required placeholder="Psychology"></label>
+        <label>Total Hours<input id="totalHours" type="number" min="0.5" max="100" step="0.5" value="4" required></label>
+        <label>Difficulty<select id="difficulty"><option>Easy</option><option selected>Medium</option><option>Hard</option></select></label>
+        <label>Preferred Slot<select id="preferredSlot"><option>Morning</option><option selected>Afternoon</option><option>Evening</option></select></label>
+        <label class="full-width">📅 Deadline<input id="deadline" type="date" required></label>
+      </div>
+      <p class="form-note">Nothing is saved until you review and accept the complete plan.</p>
+      <div class="modal-actions">
+        <button class="secondary-btn" id="cancelPlanner" type="button">Cancel</button>
+        <button class="primary-btn" id="recommendButton" type="submit">Get AI Recommendation</button>
+      </div>
+    </form>
+  </dialog>
 
-                    <label for="lightTheme">
-                        ☀️ Light Theme
-                    </label>
-
-                </div>
-
-                <div class="theme-option">
-
-                    <input
-                        type="radio"
-                        id="darkTheme"
-                        name="theme"
-                        value="dark"
-                        onchange="setTheme('dark')">
-
-                    <label for="darkTheme">
-                        🌙 Dark Theme
-                    </label>
-
-                </div>
-
-            </section>
-
-            <!-- ACCOUNT -->
-
-            <section id="account-page" class="page hidden">
-
-                <div class="page-header">
-
-                    <h1>
-                        Account
-                    </h1>
-
-                </div>
-
-                <div class="card">
-
-                    <h3>
-                        Student Profile
-                    </h3>
-
-                    <br>
-
-                    Name:
-                    Student
-
-                    <br>
-
-                    Study Goals:
-                    0
-
-                </div>
-
-            </section>
-
-        </main>
-
+  <button id="chatToggle" class="chat-button" aria-label="Open AI Study Coach">🤖</button>
+  <section id="chatWindow" class="chat-window" hidden>
+    <header class="chat-header">
+      <div class="chat-title"><span class="ai-avatar">🤖</span><div><h2>AI Study Coach</h2><span>Local-first</span></div></div>
+      <button id="chatClose" class="close-btn" aria-label="Close chat">×</button>
+    </header>
+    <div id="chatMessages" class="chat-messages" aria-live="polite">
+      <div class="message-row ai-row"><span class="message-label">StudyMate</span><div class="message assistant"><span>Welcome! Ask about your current goals, sessions, or what to study next.</span></div></div>
     </div>
-
-    <!-- MODAL -->
-
-    <div id="studyModal" class="modal">
-
-        <div class="modal-content">
-
-            <h2>
-                📚 Create Study Plan
-            </h2>
-
-            <div class="modal-grid">
-
-                <!-- Subject -->
-
-                <div>
-
-                    <label>
-                        Subject
-                    </label>
-
-                    <input
-                        id="subject"
-                        type="text"
-                        placeholder="Psychology">
-
-                </div>
-
-                <!-- Hours -->
-
-                <div>
-
-                    <label>
-                        Total Hours
-                    </label>
-
-                    <input
-                        id="hours"
-                        type="number"
-                        placeholder="10">
-
-                </div>
-
-                <!-- Difficulty -->
-
-                <div>
-
-                    <label>
-                        Difficulty
-                    </label>
-
-                    <select id="difficulty">
-
-                        <option>Easy</option>
-                        <option>Medium</option>
-                        <option>Hard</option>
-
-                    </select>
-
-                </div>
-
-                <!-- Preferred Slot -->
-
-                <div>
-
-                    <label>
-                        Preferred Slot
-                    </label>
-
-                    <select id="slot">
-
-                        <option>Morning</option>
-                        <option>Afternoon</option>
-                        <option>Evening</option>
-
-                    </select>
-
-                </div>
-
-                <!-- Deadline -->
-
-                <div class="full-width">
-
-                    <label>
-                        📅 Deadline
-                    </label>
-
-                    <div
-                        class="deadline-picker"
-                        onclick="toggleDeadlineCalendar()">
-
-                        <span id="selectedDeadline">
-                            Select Deadline
-                        </span>
-
-                        <span>
-                            📅
-                        </span>
-
-                    </div>
-
-                    <input
-                        type="hidden"
-                        id="examDate">
-
-                    <div
-                        id="deadlineCalendarPopup"
-                        class="deadline-popup hidden">
-
-                        <div class="deadline-popup-header">
-
-                            <span>
-                                Select Deadline
-                            </span>
-
-                            <button
-                                class="close-calendar-btn"
-                                onclick="toggleDeadlineCalendar()">
-                                ✕
-                            </button>
-
-                        </div>
-
-                        <div id="deadlineCalendar"></div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="modal-actions">
-
-                <button
-                    class="secondary-btn"
-                    onclick="closeModal()">
-                    Cancel
-                </button>
-
-                <button
-                    class="primary-btn"
-                    onclick="generatePlan()">
-                    Generate Plan
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- CHAT BUTTON -->
-
-    <button class="chat-button" onclick="toggleChat()">
-        🤖
-    </button>
-
-    <!-- CHAT WINDOW -->
-
-    <div id="chatWindow" class="chat-window">
-
-        <div class="chat-header">
-
-            <div class="chat-title">
-
-                <div class="ai-avatar">
-                    🤖
-                </div>
-
-                <div>
-
-                    <h4>
-                        AI Study Coach
-                    </h4>
-
-                    <span>
-                        Online
-                    </span>
-
-                </div>
-
-            </div>
-
-            <button
-                class="close-btn"
-                onclick="toggleChat()">
-                ✕
-            </button>
-
-        </div>
-
-        <div
-            id="chatMessages"
-            class="chat-messages">
-
-            <div class="ai-message">
-
-                👋 Welcome!
-
-                <br><br>
-
-                I can help you:
-
-                <br>
-
-                • Create study plans
-
-                <br>
-
-                • Recommend study schedules
-
-                <br>
-
-                • Track progress
-
-                <br>
-
-                • Suggest revision strategies
-
-            </div>
-
-        </div>
-
-        <div class="chat-input-area">
-
-            <input
-                id="chatInput"
-                type="text"
-                placeholder="Ask your study coach..."
-                onkeydown="if(event.key==='Enter'){sendMessage()}">
-
-            <button
-                class="send-btn"
-                onclick="sendMessage()">
-                ➤
-            </button>
-
-        </div>
-
-    </div>
-
-    <script src="app.js"></script>
-
+    <form id="chatForm" class="chat-input-area">
+      <label class="sr-only" for="chatInput">Question</label>
+      <input id="chatInput" maxlength="2000" placeholder="Ask your study coach…" required>
+      <button class="send-btn" type="submit" aria-label="Send">➤</button>
+    </form>
+  </section>
 </body>
-
 </html>

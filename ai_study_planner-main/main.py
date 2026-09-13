@@ -1,269 +1,280 @@
-from fastapi import FastAPI, HTTPException
-from backend.models import StudyGoal, ChatRequest
-from backend.scheduler import generate_study_plan
-from backend.storage import (
-    save_study_goals,
-    save_tasks,
-    load_study_goals,
-    load_tasks
-)
+from __future__ import annotations
 
+import asyncio
+from datetime import datetime, timedelta
+from pathlib import Path
+from threading import RLock
+from uuid import uuid4
+
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from llm import llm_chat
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
-app = FastAPI(
-    title="Study Planner API",
-    description="API to create and manage study plans based on user goals and preferences.",
-    version="1.0.0"
+from backend.models import (
+    AcceptPreviewRequest,
+    ChatRequest,
+    ScheduleUpdate,
+    StudyGoal,
+    TaskStatusUpdate,
+)
+from backend.scheduler import (
+    SchedulingError,
+    generate_study_plan,
+    validate_adjusted_sessions,
+    validate_task_move,
+)
+from backend.storage import StorageError, storage
+from llm import (
+    answer_chat,
+    fallback_chat,
+    fallback_recommendation,
+    recommend_plan,
 )
 
+
+BASE_DIR = Path(__file__).resolve().parent
+PREVIEW_TTL = timedelta(minutes=30)
+LLM_TIMEOUT_SECONDS = 12
+previews: dict[str, dict] = {}
+preview_lock = RLock()
+
+app = FastAPI(title="StudyMate", version="2.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["http://localhost:8000", "http://127.0.0.1:8000"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PATCH"],
+    allow_headers=["Content-Type"],
 )
+app.mount("/static", StaticFiles(directory=BASE_DIR / "frontend"), name="static")
+
+
+@app.on_event("startup")
+def verify_storage() -> None:
+    try:
+        storage.snapshot()
+    except StorageError as exc:
+        raise RuntimeError(str(exc)) from exc
+
+
+def _prune_previews() -> None:
+    now = datetime.now()
+    with preview_lock:
+        for preview_id in [
+            key for key, value in previews.items() if value["expires_at"] <= now
+        ]:
+            previews.pop(preview_id, None)
+
+
+async def _recommendation(goal: StudyGoal, sessions: list[dict], state: dict) -> dict:
+    try:
+        text = await asyncio.wait_for(
+            asyncio.to_thread(recommend_plan, goal, sessions, state),
+            timeout=LLM_TIMEOUT_SECONDS,
+        )
+        if not text:
+            raise RuntimeError("Ollama returned an empty response.")
+        return {"text": text, "mode": "llm", "warning": None}
+    except Exception as exc:
+        warning = f"Local AI unavailable: {type(exc).__name__}. A deterministic recommendation is shown."
+        return {
+            "text": fallback_recommendation(goal, sessions, warning),
+            "mode": "fallback",
+            "warning": warning,
+        }
+
 
 @app.get("/")
-async def health_check():
-    return {"status": "running"}
+def index():
+    return FileResponse(BASE_DIR / "frontend" / "index.html")
 
-@app.post("/generate-plan")
-async def create_study_plan(goal:StudyGoal):
-    study_goals = load_study_goals()
-    study_goals.append(goal.model_dump())
-    save_study_goals(study_goals)
-    print("study_goals ", study_goals)
-    plan = generate_study_plan(
-            goal.subject, 
-            goal.total_hours,
-            goal.difficulty,
-            goal.preferred_slot,
-            goal.deadline
-        )
 
-    # load tasks
-    tasks = load_tasks()
-    for item in plan:
-        tasks.append({
-            "id": len(tasks) + 1,
-            "day": item["day"],
-            "subject": item["subject"],
-            "hours": item["hours"],
-            "difficulty": item["difficulty"],
-            "preferred_slot": item["preferred_slot"],
-            "status": "pending",
-            "deadline":item["deadline"]
-        })
+@app.get("/application-overview.html")
+def application_overview():
+    return FileResponse(BASE_DIR / "application-overview.html")
 
-    # Persist the above tasks storage - Add code here to store it in json
-    save_tasks(tasks)
 
-    return {"message": "Study plan created successfully",
-             "plan": plan
-             }
+@app.get("/implementation-changes.html")
+def implementation_changes():
+    return FileResponse(BASE_DIR / "implementation-changes.html")
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "storage": str(storage.path)}
+
+
+@app.get("/study-goals")
+def get_study_goals():
+    return storage.snapshot()["study_goals"]
 
 
 @app.get("/tasks")
-async def get_tasks():
-    return load_tasks()
-
-
-@app.patch("/tasks/{task_id}")
-async def update_task(task_id: int):
-    tasks = load_tasks()
-    for task in tasks:
-        if task["id"] == task_id:
-            if task["status"] == "completed":
-                task["status"] = "pending"
-            else:
-                task["status"] = "completed"
-
-            save_tasks(tasks)
-            return {"message": "Task updated successfully", "task": task}
-    
-    return HTTPException(status_code=404, detail="Task not found")
+def get_tasks():
+    return storage.snapshot()["tasks"]
 
 
 @app.get("/dashboard")
-async def get_dashboard():
-    study_goals = load_study_goals()
-    tasks = load_tasks()
-
-    subjects = len(
-        set(
-            goal["subject"] for goal in study_goals
-            )
-    )
-
-    planned_hours = sum(
-        goal["total_hours"] for goal in study_goals
-    )
-
-    completed_hours = sum(
-        task["hours"] for task in tasks if task["status"] == "completed"
-        )
-    
-    progress = 0
-    
-    if planned_hours > 0:
-        progress = round(
-                    (completed_hours / planned_hours) * 100
-                    )
-        
+def dashboard():
+    state = storage.snapshot()
+    tasks = state["tasks"]
+    pending = [task for task in tasks if task.get("status") != "completed"]
+    completed = [task for task in tasks if task.get("status") == "completed"]
     return {
-            "subjects": subjects,
-            "planned_hours": planned_hours, 
-            "completed_hours": completed_hours,
-            "progress": progress
-           }
-
-@app.get("/recommendations")
-async def get_recommendations():
-
-    tasks = load_tasks()
-    total_tasks = len(tasks)
-
-    completed_tasks = len([
-        task for task in tasks
-        if task["status"] == "completed"
-    ])
-
-    pending_tasks = total_tasks - completed_tasks
-
-    progress = 0
-
-    if total_tasks > 0:
-        progress = round(
-            (completed_tasks / total_tasks) * 100
-        )
-
-    if progress < 30:
-
-        recommendation = (
-            "⚠️ You are behind schedule. Complete at least one study session today."
-        )
-
-    elif progress < 70:
-
-        recommendation = (
-            "📚 Good progress. Focus on completing pending tasks."
-        )
-
-    elif progress < 100:
-
-        recommendation = (
-            "🔥 Great work! You're almost finished."
-        )
-
-    else:
-
-        recommendation = (
-            "🎉 Congratulations! All study sessions completed."
-        )
-    print(recommendation)
-    return {
-
-        "progress": progress,
-
-        "completed_tasks": completed_tasks,
-
-        "pending_tasks": pending_tasks,
-
-        "total_tasks": total_tasks,
-
-        "recommendation": recommendation
+        "goals": len(state["study_goals"]),
+        "pending_tasks": len(pending),
+        "completed_tasks": len(completed),
+        "pending_hours": sum(float(task.get("hours", 0)) for task in pending),
     }
 
-# @app.get("/recommendations")
-# async def get_recommendations():
 
-#     recommendations = []
+@app.post("/plan-previews")
+async def create_plan_preview(goal: StudyGoal):
+    _prune_previews()
+    state = storage.snapshot()
+    try:
+        sessions = generate_study_plan(goal, state["tasks"])
+    except SchedulingError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    preview_id = str(uuid4())
+    created = datetime.now()
+    recommendation = await _recommendation(goal, sessions, state)
+    record = {
+        "preview_id": preview_id,
+        "goal": goal,
+        "sessions": sessions,
+        "recommendation": recommendation,
+        "created_at": created,
+        "expires_at": created + PREVIEW_TTL,
+        "accepted": False,
+    }
+    with preview_lock:
+        previews[preview_id] = record
+    return {
+        "preview_id": preview_id,
+        "goal": goal.model_dump(mode="json"),
+        "sessions": sessions,
+        "recommendation": recommendation,
+        "expires_at": record["expires_at"].isoformat(timespec="seconds"),
+    }
 
-#     pending_tasks = [
-#         task for task in tasks
-#         if task["status"] == "pending"
-#     ]
 
-#     completed_tasks = [
-#         task for task in tasks
-#         if task["status"] == "completed"
-#     ]
+@app.post("/plan-previews/{preview_id}/accept")
+def accept_plan_preview(preview_id: str, payload: AcceptPreviewRequest):
+    _prune_previews()
+    with preview_lock:
+        record = previews.get(preview_id)
+        if not record:
+            raise HTTPException(status_code=404, detail="Preview not found or expired.")
+        if record["accepted"]:
+            raise HTTPException(status_code=409, detail="This preview has already been accepted.")
+        state = storage.snapshot()
+        try:
+            sessions = validate_adjusted_sessions(
+                record["goal"], record["sessions"], payload.sessions, state["tasks"]
+            )
+            goal, tasks = storage.add_plan(
+                record["goal"].model_dump(mode="json"), sessions
+            )
+        except SchedulingError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except StorageError as exc:
+            raise HTTPException(status_code=500, detail=str(exc)) from exc
+        record["accepted"] = True
+    return {"goal": goal, "tasks": tasks}
 
-#     total_tasks = len(tasks)
 
-#     progress = 0
+@app.post("/generate-plan", deprecated=True)
+async def generate_plan_compatibility(goal: StudyGoal):
+    state = storage.snapshot()
+    try:
+        sessions = generate_study_plan(goal, state["tasks"])
+        saved_goal, saved_tasks = storage.add_plan(
+            goal.model_dump(mode="json"), sessions
+        )
+    except SchedulingError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return {
+        "goal": saved_goal,
+        "tasks": saved_tasks,
+        "deprecated": True,
+        "warning": "Use /plan-previews and then accept the preview.",
+    }
 
-#     if total_tasks > 0:
-#         progress = (
-#             len(completed_tasks) / total_tasks
-#         ) * 100
 
-#     # Rule 1
+@app.patch("/tasks/{task_id}")
+def update_task_status(
+    task_id: int,
+    payload: TaskStatusUpdate | None = Body(default=None),
+    status: str | None = Query(default=None),
+):
+    chosen = payload.status if payload else status
+    if chosen not in {"pending", "completed"}:
+        raise HTTPException(status_code=422, detail="Status must be pending or completed.")
+    state = storage.snapshot()
+    task = next((item for item in state["tasks"] if int(item.get("id", -1)) == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found.")
+    replacement = {**task, "status": chosen}
+    try:
+        return storage.update_task(task_id, replacement)
+    except StorageError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-#     if progress < 30:
-#         recommendations.append(
-#             "⚠️ You are behind schedule. Complete at least one session today."
-#         )
 
-#     # Rule 2
+@app.patch("/tasks/{task_id}/schedule")
+def update_task_schedule(task_id: int, payload: ScheduleUpdate):
+    state = storage.snapshot()
+    task = next((item for item in state["tasks"] if int(item.get("id", -1)) == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found.")
+    others = [item for item in state["tasks"] if int(item.get("id", -1)) != task_id]
+    try:
+        replacement = validate_task_move(task, payload, others)
+        return storage.update_task(task_id, replacement)
+    except SchedulingError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except StorageError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-#     if len(pending_tasks) > 5:
-#         recommendations.append(
-#             "📚 Multiple study sessions are pending. Consider increasing study hours."
-#         )
 
-#     # Rule 3
-
-#     hard_subjects = [
-#         task for task in pending_tasks
-#         if task.get("difficulty") == "Hard"
-#     ]
-
-#     if len(hard_subjects) > 0:
-#         recommendations.append(
-#             "🔥 Focus on hard subjects first."
-#         )
-
-#     # Rule 4
-
-#     if progress >= 80:
-#         recommendations.append(
-#             "🎉 Great progress! Focus on revision."
-#         )
-
-#     # Default
-
-#     if len(recommendations) == 0:
-#         recommendations.append(
-#             "✅ You are on track with your study plan."
-#         )
-
-#     return {
-#         "recommendations": recommendations
-#     }
+@app.get("/recommendations")
+def recommendations():
+    state = storage.snapshot()
+    pending = [task for task in state["tasks"] if task.get("status") != "completed"]
+    if not pending:
+        return {"text": "Create a study goal to receive a recommendation.", "mode": "fallback", "warning": None}
+    pending.sort(key=lambda item: (item["date"], item["start_time"]))
+    next_task = pending[0]
+    return {
+        "text": f"Next, study {next_task['subject']} on {next_task['date']} at {next_task['start_time']}.",
+        "mode": "fallback",
+        "warning": "This quick recommendation is calculated from saved tasks.",
+    }
 
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    
-    response = llm_chat(request.query)
-
-    return {
-        "response": response
-    }
-
-# around 5 to 6 apis will create for the study planner, 
-# such as creating a study plan, getting the study plan, 
-# updating the study plan, deleting the study plan, etc.
-
-
-# apis
-# 1. create_study_plan/generate_plan
-# 2. get_study_plan
-# 3. update_study_plan
-# 4. delete_study_plan
-# 5. list_study_plans
-
-#
+    state = storage.snapshot()
+    preview_sessions = None
+    if request.preview_id:
+        _prune_previews()
+        with preview_lock:
+            preview = previews.get(request.preview_id)
+            preview_sessions = preview["sessions"] if preview else None
+    try:
+        response = await asyncio.wait_for(
+            asyncio.to_thread(answer_chat, request.query, state, preview_sessions),
+            timeout=LLM_TIMEOUT_SECONDS,
+        )
+        if not response:
+            raise RuntimeError("Ollama returned an empty response.")
+        return {"response": response, "mode": "llm", "warning": None}
+    except Exception as exc:
+        warning = f"Local AI unavailable: {type(exc).__name__}. A schedule-based answer is shown."
+        return {
+            "response": fallback_chat(request.query, state, preview_sessions),
+            "mode": "fallback",
+            "warning": warning,
+        }
