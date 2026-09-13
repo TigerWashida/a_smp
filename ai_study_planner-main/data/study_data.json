@@ -51,7 +51,7 @@
       "id": 3,
       "preferred_slot": "Afternoon",
       "start_time": "13:00",
-      "status": "pending",
+      "status": "completed",
       "subject": "Delta AI White paper"
     },
     {
@@ -63,7 +63,7 @@
       "id": 4,
       "preferred_slot": "Afternoon",
       "start_time": "17:00",
-      "status": "pending",
+      "status": "completed",
       "subject": "Delta AI White paper"
     }
   ]
